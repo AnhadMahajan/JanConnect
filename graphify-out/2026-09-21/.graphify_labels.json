@@ -1,0 +1,17 @@
+{
+  "0": "package.json",
+  "1": "agents.py",
+  "2": "extract_document_from_bytes",
+  "3": "storage.py",
+  "4": "intake.py",
+  "5": "app.py",
+  "6": "App.jsx",
+  "7": "🔍 Detailed Component Walkthrough",
+  "8": "AGENTS.md — JanConnect Project Guide for AI Agents",
+  "9": "Quick CLI Reference",
+  "10": "JanConnect (जन कनेक्ट) — Civic Grievance AI Navigator",
+  "11": "rules/graphify.md",
+  "12": "workflows/graphify.md",
+  "13": "vite.config.js",
+  "14": "extraction.py"
+}
