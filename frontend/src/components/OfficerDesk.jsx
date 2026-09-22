@@ -62,6 +62,7 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tracking_id: editingComplaint.tracking_id,
+          status: newStatusValue,
           new_status: newStatusValue,
           officer_name: officerNameValue,
           remarks: officerRemarksValue,

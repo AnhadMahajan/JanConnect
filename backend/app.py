@@ -243,10 +243,10 @@ def admin_update_status_endpoint():
     """Admin / Officer Desk: updates complaint status, resolution notes, and officer assignment."""
     try:
         body = request.get_json() or {}
-        tracking_id = body.get("tracking_id", "").strip()
-        new_status = body.get("status", "").strip()
-        remarks = body.get("remarks", "").strip()
-        officer_name = body.get("officer_name", "").strip() or "Municipal Desk Officer"
+        tracking_id = (body.get("tracking_id") or "").strip()
+        new_status = (body.get("status") or body.get("new_status") or "").strip()
+        remarks = (body.get("remarks") or "").strip()
+        officer_name = (body.get("officer_name") or "").strip() or "Municipal Desk Officer"
 
         if not tracking_id or not new_status:
             return jsonify({"error": "tracking_id and status are required fields."}), 400

@@ -123,6 +123,7 @@ def upload_policy_to_blob(file_bytes: bytes, filename: str = "policy.pdf", conte
     Uploads an official government policy circular into Azure Blob Storage ('policydocuments' container).
     Returns the permanent Blob URL or None if storage is unconfigured.
     """
+    load_dotenv(override=True)
     conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
     if not conn_str or "<your" in conn_str or "your_account_name" in conn_str or "your_key_here" in conn_str or "your_storage_account_name" in conn_str:
         return None
@@ -274,14 +275,21 @@ def answer_policy_doubt(policy_text: str, question: str, target_lang: str = "en"
                 f"Please explain clearly and cite the relevant policy clauses."
             )
 
-            resp = client.chat.completions.create(
-                model=openai_deployment,
-                messages=[
+            kwargs = {
+                "model": openai_deployment,
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                max_completion_tokens=4000,
-            )
+                "max_completion_tokens": 4000,
+            }
+            try:
+                resp = client.chat.completions.create(
+                    reasoning_effort="low",
+                    **kwargs
+                )
+            except Exception:
+                resp = client.chat.completions.create(**kwargs)
 
             answer = (resp.choices[0].message.content or "").strip()
             

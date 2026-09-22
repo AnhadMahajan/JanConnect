@@ -134,7 +134,7 @@ export default function PolicyClarifier() {
       setActivePolicyTitle(data.title || "Custom Pasted Circular");
       setActivePolicyText(data.text);
       setActivePolicyDept("Custom Municipal Notification");
-      setPolicyBlobUrl("");
+      setPolicyBlobUrl(data.blob_url || "");
       setPolicyAnswerResult(null);
       setTranslatedAnswer("");
     } catch (e) {

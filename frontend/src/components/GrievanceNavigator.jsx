@@ -155,14 +155,73 @@ export default function GrievanceNavigator({
     },
   ];
 
-  // Script detection
+  // Multi-tier script and linguistic language detection
   const scriptTelemetry = useMemo(() => {
-    if (!customText) return { name: "Latin (English)", code: "en" };
-    const hasDevanagari = /[\u0900-\u097F]/.test(customText);
-    const hasGurmukhi = /[\u0A00-\u0A7F]/.test(customText);
+    if (!customText || !customText.trim()) {
+      return { name: "Latin (English)", code: "en" };
+    }
 
-    if (hasGurmukhi) return { name: "Gurmukhi (ਪੰਜਾਬੀ)", code: "pa" };
-    if (hasDevanagari) return { name: "Devanagari (हिन्दी)", code: "hi" };
+    const text = customText.trim();
+
+    // 1. Native Unicode Script Detection
+    if (/[\u0A00-\u0A7F]/.test(text)) return { name: "Gurmukhi (ਪੰਜਾਬੀ)", code: "pa" };
+    if (/[\u0900-\u097F]/.test(text)) return { name: "Devanagari (हिन्दी)", code: "hi" };
+    if (/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text)) return { name: "Urdu (اردو)", code: "ur" };
+    if (/[\u0980-\u09FF]/.test(text)) return { name: "Bengali (বাংলা)", code: "bn" };
+    if (/[\u0B80-\u0BFF]/.test(text)) return { name: "Tamil (தமிழ்)", code: "ta" };
+    if (/[\u0C00-\u0C7F]/.test(text)) return { name: "Telugu (తెలుగు)", code: "te" };
+    if (/[\u0A80-\u0AFF]/.test(text)) return { name: "Gujarati (ગુજરાતી)", code: "gu" };
+    if (/[\u0C80-\u0CFF]/.test(text)) return { name: "Kannada (ಕನ್ನಡ)", code: "kn" };
+    if (/[\u0D00-\u0D7F]/.test(text)) return { name: "Malayalam (മലയാളം)", code: "ml" };
+
+    // 2. Romanized / Transliterated Language Detection (Latin Script)
+    const lower = text.toLowerCase();
+
+    // Distinct Punjabi tokens (Roman Punjabi / Gurmukhi in Latin script)
+    const punjabiMarkers = [
+      "vich", "wich", "chuk reha", "chuk rahi", "chuk rahe", "chuk rehi",
+      "ghante to", "din to", "saade", "saada", "saadi", "tuhanu", "tuhada",
+      "tuhadi", "assi", "tusi", "hunda", "hundi", "hunde", "karvao", "karwao",
+      "kariye", "painda", "ditta", "ditti", "chali gayi", "jithe", "othe",
+      "kithon", "kinne", "nai chuk", "nahi chuk", "chukda", "chuko",
+      "te koi", "te phone", "helpline te", "manimajra"
+    ];
+
+    let punjabiScore = 0;
+    for (const marker of punjabiMarkers) {
+      if (lower.includes(marker)) punjabiScore += 3;
+    }
+    const punjabiWords = lower.match(/\b(vich|te|to|di|da|de|assi|tusi|saade|chuk|reha|rehi|karvao|kariye|hunda|chali)\b/g);
+    if (punjabiWords) punjabiScore += punjabiWords.length;
+
+    // Distinct Hindi / Hinglish tokens
+    const hindiMarkers = [
+      "hai", "hain", "tha", "thi", "the", "mein", "mai", "se", "aur", "ya",
+      "mera", "meri", "mere", "humara", "humari", "humare", "aapka", "aapki",
+      "kripya", "kripa", "kripaya", "bohot", "bahut", "zyada", "jyada",
+      "pichhle", "din", "raat", "andhera", "rehta", "rehti", "chori", "darr",
+      "sadak", "gaddha", "khadda", "kooda", "kachra", "gaadi", "theek",
+      "karo", "karein", "aaya", "aayi", "gaya", "gayi", "band", "chahiye",
+      "hoga", "hogi", "nahi", "nahin", "paani", "bijli", "sadak par", "din se"
+    ];
+
+    let hindiScore = 0;
+    for (const marker of hindiMarkers) {
+      if (lower.includes(marker)) hindiScore += 1;
+    }
+    const hindiWords = lower.match(/\b(hai|hain|tha|thi|the|ke|ki|ka|ko|mein|se|aur|ya|mera|meri|humara|kripya|bohot|bahut|zyada|din|raat|nahi|nahin|theek|karo|karein|band|aaya|aayi|gaya|gayi)\b/g);
+    if (hindiWords) hindiScore += (hindiWords.length * 1.5);
+
+    // Explicit check for Roman Punjabi dominance
+    if (punjabiScore >= 2 && punjabiScore >= hindiScore) {
+      return { name: "Punjabi (ਪੰਜਾਬੀ)", code: "pa" };
+    }
+
+    // Explicit check for Hinglish / Roman Hindi dominance
+    if (hindiScore >= 3) {
+      return { name: "Hindi (हिन्दी)", code: "hi" };
+    }
+
     return { name: "Latin (English)", code: "en" };
   }, [customText]);
 
@@ -250,9 +309,9 @@ export default function GrievanceNavigator({
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
-      if (data.transcribed_text) {
-        setCustomText((prev) => (prev ? prev + " " + data.transcribed_text : data.transcribed_text));
+      const txt = data.text || data.transcribed_text;
+      if (txt) {
+        setCustomText((prev) => (prev ? prev + " " + txt : txt));
       } else if (data.error) {
         alert("Azure Speech note: " + data.error);
       }
@@ -631,8 +690,8 @@ export default function GrievanceNavigator({
               <FileCheck size={14} />
               <span>Official Citizen Advisory & Redressal Procedures:</span>
             </span>
-            <p className="finding-content-text">
-              {routingResult.response?.statutory_advice || routingResult.response?.grounded_response || "Grievance received and verified against Chandigarh Municipal policies."}
+            <p className="finding-content-text" style={{ whiteSpace: "pre-line", lineHeight: 1.65 }}>
+              {routingResult.response?.statutory_advice || routingResult.response?.grounded_response || routingResult.response?.answer || "Grievance received and verified against Chandigarh Municipal policies."}
             </p>
           </div>
 

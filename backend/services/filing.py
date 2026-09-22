@@ -128,6 +128,7 @@ _seed_initial_complaints()
 
 
 def _get_table_client():
+    load_dotenv(override=True)
     """Initializes and returns the Azure Table Client, creating the 'complaints' table if it doesn't exist."""
     global TABLE_CLIENT
     if TABLE_CLIENT is not None:
@@ -159,6 +160,7 @@ def _get_table_client():
 
 
 def upload_grievance_report_to_blob(complaint_data: dict) -> str:
+    load_dotenv(override=True)
     """
     Uploads an official citizen grievance dossier/report as formatted JSON
     into Azure Blob Storage ('grievancereports' container).
