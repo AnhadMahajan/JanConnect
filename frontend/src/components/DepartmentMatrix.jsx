@@ -1,3 +1,15 @@
+import {
+  Droplets,
+  Zap,
+  Trash2,
+  Construction,
+  FileText,
+  Building2,
+  Phone,
+  Clock,
+  BookOpen,
+} from "lucide-react";
+
 const DEFAULT_CHANDIGARH_DEPARTMENTS = [
   {
     id: "water",
@@ -6,7 +18,8 @@ const DEFAULT_CHANDIGARH_DEPARTMENTS = [
     office: "MCC Head Office, New Deluxe Building, Sector 17, Chandigarh",
     helpline: "0172-2540200 / 0172-2787200",
     sla: "15 working days (RTS Rule 4)",
-    icon: "💧",
+    icon: Droplets,
+    color: "var(--cobalt)",
     badgeClass: "badge-water",
     keywords: ["water", "meter", "bill", "pipeline", "leak", "sewerage", "tap", "pani", "paani", "low pressure", "e-sampark", "contamination"],
     policies: [
@@ -23,7 +36,8 @@ const DEFAULT_CHANDIGARH_DEPARTMENTS = [
     office: "Electricity Operation Circle, UT Secretariat, Sector 18, Chandigarh",
     helpline: "19121 (24x7 Outage Call Centre)",
     sla: "4 hours for outages / 7 days for meter inspection",
-    icon: "⚡",
+    icon: Zap,
+    color: "var(--amber)",
     badgeClass: "badge-electricity",
     keywords: ["electricity", "power", "outage", "bijli", "transformer", "feeder", "voltage", "power cut", "burnt meter", "cpdl", "19121"],
     policies: [
@@ -40,7 +54,8 @@ const DEFAULT_CHANDIGARH_DEPARTMENTS = [
     office: "MOH Wing, Municipal Corporation, Sector 17, Chandigarh",
     helpline: "WhatsApp: 9915762917 / ICCC: 0172-2787200",
     sla: "24 hours for missed tipper / 12-24h for open dumps",
-    icon: "🗑️",
+    icon: Trash2,
+    color: "var(--emerald)",
     badgeClass: "badge-sanitation",
     keywords: ["sanitation", "garbage", "waste", "kooda", "kachra", "safai", "dustbin", "dumper", "tipper", "door to door", "ssk", "dadumajra"],
     policies: [
@@ -57,7 +72,8 @@ const DEFAULT_CHANDIGARH_DEPARTMENTS = [
     office: "B&R Division, Municipal Corporation, Sector 17, Chandigarh",
     helpline: "0172-2787200 / e-Sampark: 1800-180-1725",
     sla: "3-7 working days for streetlights / 7 days for potholes",
-    icon: "🚧",
+    icon: Construction,
+    color: "var(--terracotta)",
     badgeClass: "badge-roads",
     keywords: ["road", "roads", "streetlight", "street light", "pothole", "potholes", "sadak", "gaddha", "khamba", "dark spot", "footpath", "caving"],
     policies: [
@@ -74,7 +90,8 @@ const DEFAULT_CHANDIGARH_DEPARTMENTS = [
     office: "UT Secretariat, Sector 9, Chandigarh",
     helpline: "e-Sampark: 1800-180-1725",
     sla: "30 days (48h for life & liberty)",
-    icon: "📜",
+    icon: FileText,
+    color: "var(--slate-700)",
     badgeClass: "badge-primary",
     keywords: ["rti", "right to information", "application", "public information", "records", "appeal"],
     policies: [
@@ -91,62 +108,73 @@ export default function DepartmentMatrix({ departmentsList = [] }) {
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">
-          <span>🏛️</span> Chandigarh Municipal Authorities & Routing Matrix
-        </h2>
+        <div>
+          <h2 className="card-title">
+            <Building2 size={22} color="var(--terracotta)" />
+            <span>Chandigarh Municipal Authorities & Routing Matrix</span>
+          </h2>
+          <p className="card-subtitle">
+            Explore departmental policy grounding rules, monitored keywords for automatic sector routing, official head offices, and Right to Service (RTS) statutory deadlines.
+          </p>
+        </div>
         <span className="badge badge-primary">5 UT Civic Departments</span>
       </div>
 
-      <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
-        Explore the departmental policy grounding rules, monitored keywords for automatic sector routing, official head offices, and Right to Service (RTS) statutory deadlines:
-      </p>
-
-      <div style={{ display: "grid", gap: "1.25rem" }}>
-        {displayDepts.map((dept) => (
-          <div key={dept.id} className="dept-matrix-card">
-            <div className="dept-matrix-header">
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <div className="dept-icon-box">{dept.icon}</div>
-                <div>
-                  <strong style={{ fontSize: "1.05rem", color: dept.accentColor || "var(--text-main)" }}>{dept.name}</strong>
-                  <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
-                    Authority: <strong>{dept.authority}</strong> • Office: {dept.office}
+      <div style={{ display: "grid", gap: "1.5rem" }}>
+        {displayDepts.map((dept) => {
+          const Icon = typeof dept.icon === "function" ? dept.icon : Building2;
+          return (
+            <div key={dept.id} className="dept-matrix-card">
+              <div className="dept-matrix-header">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+                  <div className="dept-icon-box">
+                    <Icon size={22} color={dept.color || "var(--slate-800)"} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: "1.05rem", color: "var(--slate-900)" }}>{dept.name}</strong>
+                    <div style={{ fontSize: "0.78rem", color: "var(--slate-500)", marginTop: "2px" }}>
+                      Authority: <strong>{dept.authority}</strong> • Office: {dept.office}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="dept-meta-badges">
-                <span className="badge" style={{ background: "#f8fafc", color: "#334155", border: "1px solid #cbd5e1" }}>
-                  📞 {dept.helpline}
-                </span>
-                <span className={`badge ${dept.badgeClass}`}>SLA: {dept.sla}</span>
-              </div>
-            </div>
-
-            <div className="dept-kw-section">
-              <span className="dept-kw-title">
-                Monitored Grievance Keywords (English, Hindi, Punjabi):
-              </span>
-              <div className="dept-kw-list">
-                {dept.keywords.map((kw) => (
-                  <span key={kw} className="dept-kw-badge">
-                    {kw}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                  <span className="badge" style={{ background: "var(--surface-subtle)", color: "var(--slate-700)", border: "1px solid var(--slate-200)" }}>
+                    <Phone size={12} />
+                    <span>{dept.helpline}</span>
                   </span>
-                ))}
+                  <span className={`badge ${dept.badgeClass || "badge-primary"}`}>
+                    <Clock size={12} />
+                    <span>SLA: {dept.sla}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="dept-kw-section">
+                <span className="dept-kw-title">
+                  Monitored Grievance Keywords (English, Hindi, Punjabi):
+                </span>
+                <div className="dept-kw-list">
+                  {dept.keywords.map((kw) => (
+                    <span key={kw} className="dept-kw-badge">
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="dept-policy-section">
+                <span className="dept-policy-title">
+                  Grounding Policy Rules (Indexed in Azure AI Search & RTS Act):
+                </span>
+                <ul className="dept-policy-list">
+                  {dept.policies.map((p, idx) => (
+                    <li key={idx}>{p}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-
-            <div className="dept-policy-section">
-              <span className="dept-policy-title">
-                Grounding Policy Rules (Indexed in Azure AI Search & RTS Act):
-              </span>
-              <ul className="dept-policy-list">
-                {dept.policies.map((p, idx) => (
-                  <li key={idx}>{p}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

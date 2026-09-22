@@ -1,7 +1,31 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import confetti from "canvas-confetti";
+import {
+  Sparkles,
+  Droplets,
+  Zap,
+  Trash2,
+  Construction,
+  ShieldCheck,
+  Clock,
+  MapPin,
+  Mic,
+  Send,
+  CheckCircle2,
+  Copy,
+  Check,
+  ExternalLink,
+  Search,
+  AlertCircle,
+  FileCheck,
+  Building,
+  HelpCircle,
+} from "lucide-react";
 
 export default function GrievanceNavigator({
-  complaints,
+  complaints = [],
   selectedComplaintId,
   setSelectedComplaintId,
   routingResult,
@@ -12,11 +36,12 @@ export default function GrievanceNavigator({
   setLoading,
   filingLoading,
   setFilingLoading,
-  onNavigateToTracker
+  onNavigateToTracker,
 }) {
   const [intakeMode, setIntakeMode] = useState("manual");
   const [citizenName, setCitizenName] = useState("");
-  const [selectedSector, setSelectedSector] = useState("");
+  const [selectedSector, setSelectedSector] = useState("Sector 22");
+  const [selectedZone, setSelectedZone] = useState("All");
   const [customText, setCustomText] = useState("");
   const [apiError, setApiError] = useState(null);
   const [filingError, setFilingError] = useState(null);
@@ -25,64 +50,164 @@ export default function GrievanceNavigator({
   const [copiedId, setCopiedId] = useState(false);
   const audioInputRef = useRef(null);
 
-  // List of authentic Chandigarh administrative sectors & localities
-  const chandigarhSectors = [
-    "Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5",
-    "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
-    "Sector 11", "Sector 12", "Sector 12 West (Sarangpur)",
-    "Sector 13 (Manimajra)", "Sector 14 (Panjab University)",
-    "Sector 14 West (Dhanas)", "Sector 15", "Sector 16", "Sector 17 (City Center)",
-    "Sector 18", "Sector 19", "Sector 20", "Sector 21", "Sector 22",
-    "Sector 23", "Sector 24", "Sector 25", "Sector 26 (Grain Market)",
-    "Sector 27", "Sector 28", "Sector 29", "Sector 30", "Sector 31",
-    "Sector 32 (GMCH)", "Sector 33", "Sector 34 (Commercial Hub)",
-    "Sector 35", "Sector 36", "Sector 37", "Sector 38", "Sector 38 West",
-    "Sector 39", "Sector 39 West (Maloya & Dadu Majra)", "Sector 40",
-    "Sector 41", "Sector 42", "Sector 43 (ISBT 43)", "Sector 44",
-    "Sector 45 (Burail)", "Sector 46", "Sector 47", "Sector 48",
-    "Sector 49", "Sector 50", "Sector 51", "Sector 52 (Kajheri)",
-    "Sector 53", "Sector 54", "Sector 55", "Sector 56",
-    "Industrial Area Phase 1", "Industrial Area Phase 2", "Hallomajra"
+  const containerRef = useRef(null);
+  const findingCardRef = useRef(null);
+  const ticketCardRef = useRef(null);
+
+  // Administrative Sectors grouped by Urban Zones
+  const sectorDatabase = [
+    { sector: "Sector 1", zone: "Zone 1", sub: "Heritage / Capitol Complex" },
+    { sector: "Sector 2", zone: "Zone 1", sub: "VIP / Administrative" },
+    { sector: "Sector 3", zone: "Zone 1", sub: "Raj Bhavan Area" },
+    { sector: "Sector 4", zone: "Zone 1", sub: "MLA Hostel & Residences" },
+    { sector: "Sector 7", zone: "Zone 1", sub: "Sub-Div 1" },
+    { sector: "Sector 8", zone: "Zone 1", sub: "Sub-Div 1" },
+    { sector: "Sector 9", zone: "Zone 1", sub: "UT Secretariat / RTI Cell" },
+    { sector: "Sector 10", zone: "Zone 1", sub: "Museum & Arts" },
+    { sector: "Sector 11", zone: "Zone 1", sub: "Colleges / Residential" },
+    { sector: "Sector 12", zone: "Zone 2", sub: "PGIMER & PEC" },
+    { sector: "Sector 13 (Manimajra)", zone: "Zone 2", sub: "Manimajra Sub-Div" },
+    { sector: "Sector 14 (Panjab University)", zone: "Zone 2", sub: "PU Campus" },
+    { sector: "Sector 15", zone: "Zone 2", sub: "Sub-Div 2" },
+    { sector: "Sector 16", zone: "Zone 2", sub: "General Hospital" },
+    { sector: "Sector 17 (City Center)", zone: "Zone 2", sub: "MCC Head Office / Delux" },
+    { sector: "Sector 18", zone: "Zone 2", sub: "CPDL Electricity Secretariat" },
+    { sector: "Sector 19", zone: "Zone 2", sub: "Sub-Div 2" },
+    { sector: "Sector 20", zone: "Zone 2", sub: "Sub-Div 2" },
+    { sector: "Sector 21", zone: "Zone 2", sub: "Sub-Div 2" },
+    { sector: "Sector 22", zone: "Zone 2", sub: "MCC Water Sub-Div 2" },
+    { sector: "Sector 23", zone: "Zone 2", sub: "Sub-Div 2" },
+    { sector: "Sector 26 (Grain Market)", zone: "Zone 3", sub: "Commercial / Transport" },
+    { sector: "Sector 27", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 28", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 29", zone: "Zone 3", sub: "Industrial / Res" },
+    { sector: "Sector 30", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 31", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 32 (GMCH)", zone: "Zone 3", sub: "Medical College" },
+    { sector: "Sector 33", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 34 (Commercial Hub)", zone: "Zone 3", sub: "Financial District" },
+    { sector: "Sector 35", zone: "Zone 3", sub: "CPDL Sub-Div Sector 34" },
+    { sector: "Sector 36", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 37", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 38", zone: "Zone 3", sub: "Sub-Div 3" },
+    { sector: "Sector 39", zone: "Zone 4", sub: "Water Works / Maloya" },
+    { sector: "Sector 40", zone: "Zone 4", sub: "Sub-Div 4" },
+    { sector: "Sector 41", zone: "Zone 4", sub: "Sub-Div 4" },
+    { sector: "Sector 42", zone: "Zone 4", sub: "Lake / Sports" },
+    { sector: "Sector 43 (ISBT 43)", zone: "Zone 4", sub: "Interstate Bus Terminal" },
+    { sector: "Sector 44", zone: "Zone 4", sub: "Sub-Div 4" },
+    { sector: "Sector 45 (Burail)", zone: "Zone 4", sub: "Sub-Div 4" },
+    { sector: "Sector 46", zone: "Zone 4", sub: "MOH Sanitation Ward 46" },
+    { sector: "Sector 47", zone: "Zone 4", sub: "Sub-Div 4" },
+    { sector: "Sector 48", zone: "Zone 4", sub: "Society Sectors" },
+    { sector: "Sector 49", zone: "Zone 4", sub: "Society Sectors" },
+    { sector: "Sector 50", zone: "Zone 4", sub: "Society Sectors" },
+    { sector: "Industrial Area Phase 1", zone: "Zone 3", sub: "Industrial Cluster" },
+    { sector: "Industrial Area Phase 2", zone: "Zone 3", sub: "Industrial Cluster" },
   ];
 
-  const sampleChips = [
+  const filteredSectors = useMemo(() => {
+    if (selectedZone === "All") return sectorDatabase;
+    return sectorDatabase.filter((s) => s.zone === selectedZone);
+  }, [selectedZone]);
+
+  // Curated Chandigarh Case Dossiers with Lucide icons
+  const caseDossiers = [
     {
-      label: "💧 Sector 22 Water Bill Inflated",
+      label: "Sector 22 Water Bill Surge",
+      icon: Droplets,
       text: "I received an inflated water bill of Rs. 4,850 for House No 1240, Sector 22-B via e-Sampark. Last month was Rs. 650. I suspect the smart water meter is faulty.",
       sector: "Sector 22",
-      name: "Virender Sharma"
+      name: "Virender Sharma",
+      color: "var(--cobalt)",
     },
     {
-      label: "⚡ Manimajra Power Cut (Punjabi)",
+      label: "Manimajra Power Outage (ਪੰਜਾਬੀ)",
+      icon: Zap,
       text: "Manimajra sub-division vich pichhle 4 ghante to bijli band hai. 19121 helpline te koi phone nahi chuk reha, kripya local transformer check karvao.",
       sector: "Sector 13 (Manimajra)",
-      name: "Gurpreet Singh Sandhu"
+      name: "Gurpreet Singh Sandhu",
+      color: "var(--amber)",
     },
     {
-      label: "💡 Sector 35-C Streetlight Out (Hindi)",
+      label: "Sector 35 Streetlights Out (हिन्दी)",
+      icon: Construction,
       text: "Sector 35-C ke inner park aur V4 road ki street lights pichhle 5 din se band hain, raat ko pura andhera rehta hai aur chori ka darr hai.",
       sector: "Sector 35",
-      name: "Sunita Aggarwal"
+      name: "Sunita Aggarwal",
+      color: "var(--terracotta)",
     },
     {
-      label: "🗑️ Sector 46 Door-to-Door Waste Missed",
+      label: "Sector 46 Waste Tipper Missed",
+      icon: Trash2,
       text: "The MCC door-to-door waste collection tipper vehicle has missed Sector 46-D for two consecutive days. Segregated garbage is piling up.",
       sector: "Sector 46",
-      name: "Deepak Mehta"
+      name: "Deepak Mehta",
+      color: "var(--emerald)",
     },
     {
-      label: "🚧 Sector 19 Market Dangerous Pothole",
+      label: "Sector 19 Road Cave-in / Pothole",
+      icon: Construction,
       text: "A dangerous deep pothole and road caving has formed near Sector 19 market roundabout causing two-wheeler accidents. Needs urgent patchwork.",
       sector: "Sector 19",
-      name: "Pooja Verma"
-    }
+      name: "Pooja Verma",
+      color: "var(--terracotta)",
+    },
   ];
 
-  // Browser Speech-to-Text Voice Dictation
+  // Script detection
+  const scriptTelemetry = useMemo(() => {
+    if (!customText) return { name: "Latin (English)", code: "en" };
+    const hasDevanagari = /[\u0900-\u097F]/.test(customText);
+    const hasGurmukhi = /[\u0A00-\u0A7F]/.test(customText);
+
+    if (hasGurmukhi) return { name: "Gurmukhi (ਪੰਜਾਬੀ)", code: "pa" };
+    if (hasDevanagari) return { name: "Devanagari (हिन्दी)", code: "hi" };
+    return { name: "Latin (English)", code: "en" };
+  }, [customText]);
+
+  // GSAP Smooth Reveal for Advisory Finding
+  useGSAP(() => {
+    if (routingResult && findingCardRef.current) {
+      gsap.from(findingCardRef.current, {
+        y: 25,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+      findingCardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [routingResult]);
+
+  // GSAP Smooth Reveal & Confetti for Stamped Certificate
+  useGSAP(() => {
+    if (filedResult && ticketCardRef.current) {
+      try {
+        confetti({
+          particleCount: 75,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#ea580c", "#059669", "#2563eb", "#d97706"],
+        });
+      } catch (err) {
+        // ignore
+      }
+
+      gsap.from(ticketCardRef.current, {
+        scale: 0.96,
+        opacity: 0,
+        duration: 0.6,
+        ease: "back.out(1.2)",
+      });
+      ticketCardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [filedResult]);
+
+  // Browser Speech Recognition
   const toggleSpeechRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Browser speech recognition not supported in this browser. Please use Chrome/Edge or upload an audio file for Azure Speech.");
+      alert("Browser speech recognition is not supported in this browser. Please use Chrome/Edge or upload an audio file.");
       return;
     }
 
@@ -99,10 +224,7 @@ export default function GrievanceNavigator({
 
       recognition.onstart = () => setIsRecording(true);
       recognition.onend = () => setIsRecording(false);
-      recognition.onerror = (e) => {
-        console.error("Speech recognition error:", e);
-        setIsRecording(false);
-      };
+      recognition.onerror = () => setIsRecording(false);
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setCustomText((prev) => (prev ? prev + " " + transcript : transcript));
@@ -110,12 +232,11 @@ export default function GrievanceNavigator({
 
       recognition.start();
     } catch (e) {
-      console.error(e);
       setIsRecording(false);
     }
   };
 
-  // Azure Cognitive Services Speech Audio Upload
+  // Azure Cognitive Speech File Upload
   const handleAudioUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -123,7 +244,7 @@ export default function GrievanceNavigator({
     setAudioUploading(true);
     try {
       const formData = new FormData();
-      formData.append("audio", file);
+      formData.append("file", file);
 
       const res = await fetch("/api/transcribe-audio", {
         method: "POST",
@@ -148,10 +269,9 @@ export default function GrievanceNavigator({
     let bodyData = {};
     if (intakeMode === "manual") {
       if (!customText || !customText.trim()) {
-        setApiError("Please enter your grievance details or choose a Chandigarh scenario below before routing.");
+        setApiError("Please enter your grievance description or select a curated case dossier.");
         return;
       }
-      // Append selected sector to raw text if not already included
       let fullText = customText.trim();
       if (selectedSector && !fullText.toLowerCase().includes(selectedSector.toLowerCase())) {
         fullText = `[Location: ${selectedSector}] ${fullText}`;
@@ -162,7 +282,7 @@ export default function GrievanceNavigator({
       };
     } else {
       if (!selectedComplaintId) {
-        setApiError("Please select a Chandigarh grievance scenario from the list above.");
+        setApiError("Please select an archival grievance scenario from the list.");
         return;
       }
       bodyData = { complaint_id: selectedComplaintId };
@@ -178,18 +298,18 @@ export default function GrievanceNavigator({
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data || data.error || !data.routing) {
-        throw new Error(data?.error || `Server returned error (${res.status}). Please check backend status.`);
+        throw new Error(data?.error || `Server returned error (${res.status}).`);
       }
       setRoutingResult(data);
     } catch (e) {
       console.error("Error processing complaint:", e);
-      setApiError(e.message || "Failed to reach backend server. Please verify Python Flask is running on port 5001.");
+      setApiError(e.message || "Failed to reach backend server. Verify Flask is running on port 5001.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Official Complaint Filing
+  // Official Grievance Filing
   const handleFileComplaint = async () => {
     if (!routingResult) return;
     setFilingLoading(true);
@@ -229,526 +349,406 @@ export default function GrievanceNavigator({
     setTimeout(() => setCopiedId(false), 2000);
   };
 
-  const getDepartmentBadge = (deptId) => {
-    if (!deptId || deptId === "general") return <span className="badge badge-primary">🏛️ Municipal Cell</span>;
-    if (deptId === "water") return <span className="badge badge-water">💧 MCC Water Supply</span>;
-    if (deptId === "electricity") return <span className="badge badge-electricity">⚡ CPDL Electricity</span>;
-    if (deptId === "sanitation") return <span className="badge badge-sanitation">🗑️ MCC Sanitation</span>;
-    if (deptId === "roads") return <span className="badge badge-roads">🚧 MCC Roads and Lights</span>;
-    return <span className="badge badge-primary">{deptId}</span>;
-  };
-
-  const getLanguageBadge = (lang) => {
-    if (!lang) return <span className="badge badge-en">🌐 English</span>;
-    if (lang.startsWith("hi")) return <span className="badge badge-hi">🇮🇳 Hindi (हिन्दी)</span>;
-    if (lang.startsWith("pa")) return <span className="badge badge-pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</span>;
-    return <span className="badge badge-en">🌐 {lang.toUpperCase()}</span>;
-  };
-
   return (
-    <div>
-      {/* CHANDIGARH HELPLINES BANNER */}
-      <div className="chd-helpline-banner">
-        <div className="helpline-left">
-          <span className="helpline-icon">🚨</span>
+    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {/* =====================================================================
+          CARD 1: CITIZEN INTAKE STUDIO
+          ===================================================================== */}
+      <section className="studio-card">
+        <header className="studio-header">
+          <div className="studio-title-area">
+            <span className="section-tag">
+              <Sparkles size={14} />
+              <span>Phase 1 • Citizen Intake & Location Radar</span>
+            </span>
+            <h2 className="studio-title">Draft & Route Public Grievance</h2>
+            <p className="studio-subtitle">
+              Submit in Hindi, Punjabi, or English. Instant statutory routing to MCC, CPDL, or UT Administration under the Punjab Right to Service Act 2011.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              type="button"
+              className={`btn btn-sm ${intakeMode === "manual" ? "btn-primary" : "btn-secondary"}`}
+              onClick={() => setIntakeMode("manual")}
+            >
+              Draft Grievance
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${intakeMode === "mock" ? "btn-primary" : "btn-secondary"}`}
+              onClick={() => setIntakeMode("mock")}
+            >
+              Archival Cases ({complaints.length})
+            </button>
+          </div>
+        </header>
+
+        {apiError && (
+          <div style={{ background: "var(--critical-subtle)", border: "1px solid var(--critical-border)", color: "var(--critical)", padding: "0.85rem 1.15rem", borderRadius: "8px", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.86rem" }}>
+            <AlertCircle size={16} />
+            <span>{apiError}</span>
+          </div>
+        )}
+
+        {intakeMode === "manual" ? (
           <div>
-            <div className="helpline-title">UT Chandigarh Official 24x7 Civic Helplines</div>
-            <div className="helpline-sub">Integrated Command & Control Centre (ICCC) • Citizen Charters</div>
-          </div>
-        </div>
-
-        <div className="helpline-pills">
-          <div className="helpline-pill">
-            <span>⚡ Electricity (CPDL):</span> <strong>19121</strong>
-          </div>
-          <div className="helpline-pill">
-            <span>💧 Water Supply:</span> <strong>0172-2540200</strong>
-          </div>
-          <div className="helpline-pill">
-            <span>🗑️ MOH WhatsApp:</span> <strong>9915762917</strong>
-          </div>
-          <div className="helpline-pill">
-            <span>🏛️ ICCC Central:</span> <strong>0172-2787200</strong>
-          </div>
-        </div>
-      </div>
-
-      {/* STAGE 1: INTAKE */}
-      <section className="card">
-        <div className="card-header">
-          <h2 className="card-title">
-            <span>1.</span> Chandigarh Citizen Grievance Intake
-          </h2>
-          
-          <div className="mode-toggle-group">
-            <button
-              className={`mode-btn ${intakeMode === "manual" ? "active" : ""}`}
-              onClick={() => {
-                setIntakeMode("manual");
-                setRoutingResult(null);
-                setFiledResult(null);
-              }}
-            >
-              ✍️ Manual / Voice Entry
-            </button>
-            <button
-              className={`mode-btn ${intakeMode === "sample" ? "active" : ""}`}
-              onClick={() => {
-                setIntakeMode("sample");
-                setRoutingResult(null);
-                setFiledResult(null);
-              }}
-            >
-              📂 Chandigarh Scenarios
-            </button>
-          </div>
-        </div>
-
-        {intakeMode === "manual" && (
-          <div className="manual-form-card">
-            <div className="intake-form-grid">
-              <div className="form-group">
-                <label className="form-label">Citizen Name</label>
+            {/* Form Row: Name & Phone */}
+            <div className="form-grid-2">
+              <div className="field-group">
+                <label className="field-label">Citizen Full Name</label>
                 <input
                   type="text"
-                  placeholder="e.g. Ramesh Sharma"
+                  placeholder="e.g. Virender Sharma"
                   value={citizenName}
                   onChange={(e) => setCitizenName(e.target.value)}
-                  className="form-input"
+                  className="field-input"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Sector / Area (Optional)</label>
+              {/* Sector Picker with Zones */}
+              <div className="field-group">
+                <label className="field-label">Administrative Sector</label>
                 <select
                   value={selectedSector}
                   onChange={(e) => setSelectedSector(e.target.value)}
-                  className="form-input form-select"
+                  className="field-input"
                 >
-                  <option value="">🔍 Auto-detect sector from text</option>
-                  {chandigarhSectors.map((sec) => (
-                    <option key={sec} value={sec}>{sec}</option>
+                  {sectorDatabase.map((s) => (
+                    <option key={s.sector} value={s.sector}>
+                      {s.sector} — {s.sub} ({s.zone})
+                    </option>
                   ))}
                 </select>
               </div>
-
-              <div className="form-group">
-                <label className="form-label">Voice Intake</label>
-                <div className="voice-btn-row">
-                  {/* Browser Speech */}
-                  <button
-                    type="button"
-                    className={`voice-btn ${isRecording ? "recording" : ""}`}
-                    onClick={toggleSpeechRecognition}
-                    title="Speak in Hindi, Punjabi, or English"
-                  >
-                    <span>🎙️</span>
-                    <span>{isRecording ? "Listening..." : "Browser Voice"}</span>
-                  </button>
-
-                  {/* Azure Speech File Upload */}
-                  <input
-                    type="file"
-                    ref={audioInputRef}
-                    style={{ display: "none" }}
-                    accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a"
-                    onChange={handleAudioUpload}
-                  />
-                  <button
-                    type="button"
-                    className="voice-btn voice-btn-cloud"
-                    onClick={() => audioInputRef.current && audioInputRef.current.click()}
-                    disabled={audioUploading}
-                    title="Transcribe recorded audio file using Azure Speech SDK"
-                  >
-                    <span>☁️</span>
-                    <span>{audioUploading ? "Transcribing..." : "Azure Speech"}</span>
-                  </button>
-                </div>
-              </div>
             </div>
 
-            <div className="form-group">
-              <div className="form-label-row">
-                <label className="form-label">Grievance Description (Hindi, Punjabi, English)</label>
-                <span className="char-counter">{customText.length} characters</span>
+            {/* Zone Filter Chips */}
+            <div className="sector-picker-panel">
+              <div className="sector-picker-header">
+                <span className="sector-picker-title">
+                  <MapPin size={13} color="var(--terracotta)" />
+                  <span>Filter Sectors by Administrative Zone:</span>
+                </span>
+                <span style={{ fontSize: "0.72rem", color: "var(--slate-500)", fontFamily: "var(--font-mono)" }}>
+                  {filteredSectors.length} Sectors Active
+                </span>
               </div>
-              <textarea
-                placeholder="Describe your civic problem (e.g. 'Sector 22 water meter reading is excessively high' or 'Manimajra vich bijli pichhle 4 ghante to band hai' or 'Sector 46 kooda gadi nahi aayi')..."
-                value={customText}
-                onChange={(e) => {
-                  setCustomText(e.target.value);
-                  setRoutingResult(null);
-                  setFiledResult(null);
-                }}
-                className="form-textarea"
-              ></textarea>
-            </div>
-
-            <div className="quick-chips-wrapper">
-              <div className="quick-chips-header">
-                <span>💡</span>
-                <span>Quick Test Scenarios (Click to Fill):</span>
-              </div>
-              <div className="quick-chips-list">
-                {sampleChips.map((chip, idx) => (
+              <div className="zone-filter-strip">
+                {["All", "Zone 1", "Zone 2", "Zone 3", "Zone 4"].map((z) => (
                   <button
-                    key={idx}
+                    key={z}
                     type="button"
-                    className="quick-chip"
-                    onClick={() => {
-                      setCustomText(chip.text);
-                      setSelectedSector(chip.sector);
-                      setCitizenName(chip.name);
-                      setRoutingResult(null);
-                      setFiledResult(null);
-                    }}
+                    className={`zone-pill ${selectedZone === z ? "active" : ""}`}
+                    onClick={() => setSelectedZone(z)}
                   >
-                    {chip.label}
+                    {z}
                   </button>
                 ))}
               </div>
             </div>
-          </div>
-        )}
 
+            {/* Grievance Drafting Canvas */}
+            <div className="drafting-wrapper">
+              <label className="field-label" style={{ marginBottom: "0.5rem" }}>
+                Grievance Narration (Text or Voice)
+              </label>
+              <textarea
+                placeholder="Describe your issue with water bills, power cuts, missed garbage collection, potholes, or streetlights in any language..."
+                value={customText}
+                onChange={(e) => setCustomText(e.target.value)}
+                className="drafting-textarea"
+              />
 
-        {intakeMode === "sample" && (
-          <div>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-              Select a pre-configured Chandigarh citizen grievance scenario:
-            </p>
-            <div className="complaints-grid">
-              {complaints.map((c) => {
-                const isSelected = c.id === selectedComplaintId;
-                return (
-                  <div
-                    key={c.id}
-                    className={`complaint-card ${isSelected ? "selected" : ""}`}
-                    onClick={() => {
-                      setSelectedComplaintId(c.id);
-                      setRoutingResult(null);
-                      setFiledResult(null);
-                    }}
+              <div className="drafting-toolbar">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                  <span className="script-badge">
+                    <span>Language Detected:</span>
+                    <strong>{scriptTelemetry.name}</strong>
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    className={`voice-btn ${isRecording ? "recording" : ""}`}
+                    onClick={toggleSpeechRecognition}
                   >
-                    <div className="complaint-card-header">
-                      <div className="citizen-info">
-                        <div className="citizen-avatar">{c.citizen_name ? c.citizen_name.charAt(0) : "C"}</div>
-                        <div>
-                          <span style={{ fontWeight: 600 }}>{c.citizen_name || c.id}</span>
-                          {c.sector && (
-                            <div style={{ fontSize: "0.75rem", color: "var(--primary)" }}>📍 {c.sector}</div>
-                          )}
-                        </div>
-                      </div>
-                      {getLanguageBadge(c.language)}
-                    </div>
-                    <p className="complaint-text-snippet">"{c.raw_text}"</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </section>
+                    <Mic size={14} />
+                    <span>{isRecording ? "Listening (Click to Stop)..." : "Record Voice Note"}</span>
+                  </button>
 
-      {/* STAGE 2/3/4: ROUTING & GROUNDED SPECIALIST AGENT */}
-      <section className="card">
-        <div className="card-header">
-          <h2 className="card-title">
-            <span>2.</span> Department Routing and Grounded Specialist Advisory
-          </h2>
-          {routingResult?.routing && getDepartmentBadge(routingResult.routing.department_id)}
-        </div>
+                  <input
+                    type="file"
+                    ref={audioInputRef}
+                    accept="audio/*"
+                    style={{ display: "none" }}
+                    onChange={handleAudioUpload}
+                  />
 
-        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-          Synthesizes Azure AI Translation + Sector Intelligence + Azure AI Search policy retrieval with GPT-5-mini reasoning:
-        </p>
-
-        <button
-          className="btn btn-primary"
-          onClick={handleProcessComplaint}
-          disabled={loading}
-          style={{ width: "100%", padding: "0.85rem 1.25rem", fontSize: "0.95rem" }}
-        >
-          {loading ? (
-            <>
-              <span className="pulse" style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff", display: "inline-block" }}></span>
-              Routing Grievance with Azure AI and GPT-5-mini...
-            </>
-          ) : (
-            <>⚡ Route and Generate Grounded Municipal Advisory</>
-          )}
-        </button>
-
-        {loading && (
-          <div style={{
-            marginTop: "0.75rem",
-            padding: "0.65rem 1rem",
-            background: "#eff6ff",
-            border: "1px solid #bfdbfe",
-            borderRadius: "var(--radius-sm)",
-            color: "#1e40af",
-            fontSize: "0.82rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.6rem"
-          }}>
-            <span className="pulse" style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563eb", display: "inline-block" }}></span>
-            <span>Querying Azure AI Search policies and synthesizing grounded officer advice with GPT-5-mini (usually 5-15s)...</span>
-          </div>
-        )}
-
-        {apiError && (
-          <div style={{
-            marginTop: "1rem",
-            padding: "0.85rem 1.25rem",
-            background: "#fef2f2",
-            border: "1.5px solid #f87171",
-            borderRadius: "var(--radius-md)",
-            color: "#991b1b",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "0.75rem",
-            fontSize: "0.88rem"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <span style={{ fontSize: "1.2rem" }}>⚠️</span>
-              <div>
-                <strong>Notice:</strong> {apiError}
+                  <button
+                    type="button"
+                    className="voice-btn"
+                    onClick={() => audioInputRef.current && audioInputRef.current.click()}
+                    disabled={audioUploading}
+                  >
+                    <span>{audioUploading ? "Transcribing..." : "Upload Audio (.wav/.mp3)"}</span>
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Quick Scenario Chips */}
+            <div className="scenarios-strip">
+              <span className="scenarios-title">
+                <FileCheck size={13} color="var(--slate-600)" />
+                <span>Quick Chandigarh Test Cases:</span>
+              </span>
+              <div className="scenario-chips-row">
+                {caseDossiers.map((c, i) => {
+                  const Icon = c.icon;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className="scenario-chip"
+                      onClick={() => {
+                        setCustomText(c.text);
+                        setCitizenName(c.name);
+                        setSelectedSector(c.sector);
+                      }}
+                    >
+                      <Icon size={14} color={c.color} />
+                      <span>{c.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Primary Analysis Trigger */}
             <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => setApiError(null)}
-              style={{ padding: "0.2rem 0.6rem", fontSize: "0.75rem" }}
+              type="button"
+              className="btn-primary-action"
+              onClick={handleProcessComplaint}
+              disabled={loading || !customText.trim()}
             >
-              Dismiss
+              <Send size={16} />
+              <span>{loading ? "Analyzing with Azure AI Search + Foundry..." : "Analyze & Formulate Legal Advisory"}</span>
+            </button>
+          </div>
+        ) : (
+          <div>
+            {/* Mock Complaints List */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
+              {complaints.map((c) => (
+                <div
+                  key={c.id}
+                  onClick={() => setSelectedComplaintId(c.id)}
+                  style={{
+                    padding: "1rem 1.25rem",
+                    borderRadius: "8px",
+                    border: `1px solid ${selectedComplaintId === c.id ? "var(--slate-900)" : "var(--slate-200)"}`,
+                    background: selectedComplaintId === c.id ? "var(--surface-subtle)" : "#ffffff",
+                    cursor: "pointer",
+                    boxShadow: selectedComplaintId === c.id ? "var(--shadow-sm)" : "none",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <strong style={{ fontSize: "0.92rem", color: "var(--slate-900)" }}>{c.citizen_name}</strong>
+                    <span className="badge badge-primary">{c.sector || "UT Chandigarh"}</span>
+                  </div>
+                  <p style={{ fontSize: "0.85rem", color: "var(--slate-600)", margin: 0 }}>"{c.raw_text}"</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-primary-action"
+              onClick={handleProcessComplaint}
+              disabled={loading || !selectedComplaintId}
+            >
+              <Send size={16} />
+              <span>{loading ? "Processing Archival Docket..." : "Analyze Selected Case"}</span>
             </button>
           </div>
         )}
-
-        {routingResult?.routing && (
-          <div style={{ marginTop: "1.5rem" }}>
-            {routingResult.complaint?.translated_text && (
-              <div className="active-complaint-box" style={{ marginBottom: "1.25rem" }}>
-                <div className="active-complaint-meta">
-                  <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>
-                    Azure AI Translation:
-                  </span>
-                  {getLanguageBadge(routingResult.complaint?.language)}
-                  <span style={{ fontSize: "0.8rem", color: "#6366f1" }}>➔ English Working Copy</span>
-                </div>
-                <div className="translated-box">
-                  <div className="translated-label">Normalized Working Text (Used for Policy Search & Routing):</div>
-                  <p>{routingResult.complaint?.translated_text}</p>
-                </div>
-              </div>
-            )}
-
-            <div className="routing-banner">
-              <div className="routing-dept-info">
-                <div className="routing-icon">
-                  {routingResult.routing.department_id === "water" ? "💧" :
-                   routingResult.routing.department_id === "electricity" ? "⚡" :
-                   routingResult.routing.department_id === "sanitation" ? "🗑️" :
-                   routingResult.routing.department_id === "roads" ? "🚧" : "🏛️"}
-                </div>
-                <div className="routing-text-group">
-                  <h4>{routingResult.routing.department_name}</h4>
-                  <p>
-                    Authority: <strong>{routingResult.routing.official_authority || "Municipal Corporation Chandigarh"}</strong>
-                    {routingResult.routing.office_location && ` • ${routingResult.routing.office_location}`}
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
-                {routingResult.routing.detected_sector && (
-                  <div className="score-pill" style={{ borderColor: "#6366f1", color: "#4338ca", background: "#eef2ff" }}>
-                    <span>Jurisdiction:</span>
-                    <strong>📍 {routingResult.routing.detected_sector}</strong>
-                  </div>
-                )}
-                <div className="score-pill">
-                  <span>Relevance:</span>
-                  <strong style={{ color: "var(--primary)" }}>{routingResult.routing.score} pts</strong>
-                </div>
-              </div>
-            </div>
-
-            {/* DIRECT EMERGENCY HELPLINE CALLOUT */}
-            {routingResult.routing.helpline && (
-              <div style={{
-                margin: "0.75rem 0",
-                padding: "0.6rem 1rem",
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: "var(--radius-sm)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                fontSize: "0.82rem"
-              }}>
-                <div>
-                  <span style={{ color: "var(--text-muted)" }}>Direct Department Helpline: </span>
-                  <strong style={{ color: "var(--primary)" }}>{routingResult.routing.helpline}</strong>
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: 600 }}>● Active Line</span>
-              </div>
-            )}
-
-            <div className="agent-response-card">
-              <div className="agent-response-header">
-                <div className="agent-title">
-                  <span>🏛️</span> {routingResult.routing.department_name} — Specialist Officer
-                </div>
-                <span className="badge badge-success" style={{ background: "rgba(255,255,255,0.2)", color: "#fff", border: "none" }}>
-                  Azure AI Search Grounded (GPT-5-mini)
-                </span>
-              </div>
-              <div className="agent-body">
-                <div className="agent-speech-bubble">
-                  <p style={{ fontWeight: 600, color: "var(--primary)", marginBottom: "0.3rem", fontSize: "0.8rem", textTransform: "uppercase" }}>
-                    Official Citizen Advisory and Statutory Timelines:
-                  </p>
-                  <p style={{ whiteSpace: "pre-line" }}>{routingResult.response?.answer || "Processing advisory..."}</p>
-                </div>
-
-                <div className="grounding-notice">
-                  <span>✓</span> Grounded against the Chandigarh Right to Service (RTS) Act and Municipal Corporation policies in Azure AI Search.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
 
-      {/* STAGE 5: FILING & TICKET GENERATION */}
-      <section className="card">
-        <div className="card-header">
-          <h2 className="card-title">
-            <span>3.</span> Official Filing and Azure Table Storage
-          </h2>
-          {filedResult && <span className="badge badge-success">✓ Ticket Registered in Cloud</span>}
-        </div>
+      {/* =====================================================================
+          CARD 2: PROGRESSIVE STATUTORY LEGAL ADVISORY (GSAP REVEAL)
+          ===================================================================== */}
+      {routingResult && (
+        <section ref={findingCardRef} className="statutory-finding-card">
+          <header className="finding-header">
+            <div>
+              <span className="section-tag" style={{ color: "var(--cobalt)" }}>
+                <ShieldCheck size={14} />
+                <span>Phase 2 • Grounded Statutory Advisory</span>
+              </span>
+              <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem", fontWeight: 800, color: "var(--slate-900)" }}>
+                {routingResult.routing?.department_name || "Assigned Authority"}
+              </h3>
+            </div>
+            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+              <span className="badge badge-primary">
+                Confidence: {routingResult.routing?.confidence ? `${Math.round(routingResult.routing.confidence * 100)}%` : "Verified"}
+              </span>
+              <span className="badge badge-warning">
+                <Clock size={12} />
+                <span>SLA: {routingResult.response?.statutory_sla || "15 Days"}</span>
+              </span>
+            </div>
+          </header>
 
-        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-          Persist grievance to Azure Table Storage database with official tracking ID and Right to Service (RTS) SLA deadline:
-        </p>
-
-        {filingError && (
-          <div style={{
-            marginBottom: "1rem",
-            padding: "0.85rem 1.25rem",
-            background: "#fef2f2",
-            border: "1.5px solid #f87171",
-            borderRadius: "var(--radius-md)",
-            color: "#991b1b",
-            fontSize: "0.88rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem"
-          }}>
-            <span>⚠️</span>
-            <div><strong>Filing Notice:</strong> {filingError}</div>
+          {/* Metadata Grid */}
+          <div className="finding-meta-grid">
+            <div className="meta-cell">
+              <span className="meta-label">Competent Authority</span>
+              <span className="meta-value">{routingResult.response?.authority || "Municipal Corporation Chandigarh"}</span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Statutory Regulation</span>
+              <span className="meta-value">{routingResult.response?.rule || "Punjab Right to Service Act 2011"}</span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Official Nodal Office</span>
+              <span className="meta-value">{routingResult.response?.office || "MCC Delux Building, Sector 17"}</span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Department Helpline</span>
+              <span className="meta-value" style={{ color: "var(--cobalt)" }}>
+                {routingResult.response?.helpline || "0172-2787200"}
+              </span>
+            </div>
           </div>
-        )}
 
-        <button
-          className="btn btn-success"
-          onClick={handleFileComplaint}
-          disabled={!routingResult || filingLoading}
-        >
-          {filingLoading ? "Registering Grievance in Azure Storage..." : "📥 File Official Chandigarh Civic Grievance"}
-        </button>
+          {/* Synthesized Legal Advisory */}
+          <div className="finding-content-box">
+            <span className="finding-content-title">
+              <FileCheck size={14} />
+              <span>Official Citizen Advisory & Redressal Procedures:</span>
+            </span>
+            <p className="finding-content-text">
+              {routingResult.response?.statutory_advice || routingResult.response?.grounded_response || "Grievance received and verified against Chandigarh Municipal policies."}
+            </p>
+          </div>
 
-        {!routingResult && (
-          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginLeft: "1rem" }}>
-            (Please process & route grievance first)
-          </span>
-        )}
-
-        {filedResult && (
-          <div className="filing-receipt">
-            <div className="receipt-header">
-              <div className="receipt-title">
-                <span>🏛️</span> Chandigarh Municipal Corporation Grievance Acknowledgement
-              </div>
-              <span className="badge badge-success">Status: {filedResult.status}</span>
+          {filingError && (
+            <div style={{ background: "var(--critical-subtle)", border: "1px solid var(--critical-border)", color: "var(--critical)", padding: "0.85rem 1.15rem", borderRadius: "8px", marginBottom: "1.25rem", fontSize: "0.86rem" }}>
+              ⚠️ {filingError}
             </div>
+          )}
 
-            <div className="tracking-code-box">
-              <div>
-                <div style={{ fontSize: "0.72rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700 }}>
-                  Official Grievance Tracking ID
-                </div>
-                <div className="tracking-id-text">{filedResult.tracking_id}</div>
-              </div>
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={() => copyToClipboard(filedResult.tracking_id)}
-              >
-                {copiedId ? "✓ Copied!" : "📋 Copy ID"}
-              </button>
-            </div>
+          {/* Action to File Grievance */}
+          <button
+            type="button"
+            className="btn-file-ticket"
+            onClick={handleFileComplaint}
+            disabled={filingLoading}
+          >
+            <ShieldCheck size={18} />
+            <span>{filingLoading ? "Registering in Azure Table Database..." : "File Official Grievance & Issue Docket"}</span>
+          </button>
+        </section>
+      )}
 
-            <div className="receipt-grid">
-              <div className="receipt-item">
-                <label>Citizen Name</label>
-                <span>{filedResult.citizen_name || citizenName || "Citizen"}</span>
-              </div>
-              <div className="receipt-item">
-                <label>Assigned Department</label>
-                <span>{filedResult.department_name}</span>
-              </div>
-              <div className="receipt-item">
-                <label>Statutory RTS SLA</label>
-                <span style={{ fontWeight: 600, color: "#b45309" }}>
-                  {filedResult.department_id === "water" ? "15 Working Days (RTS Rule 4)" :
-                   filedResult.department_id === "electricity" ? "7 Working Days (RTS Rule 2)" :
-                   filedResult.department_id === "sanitation" ? "2 Working Days (24h Collection)" :
-                   filedResult.department_id === "roads" ? "7 Working Days (RTS Rule 6)" : "14 Working Days"}
-                </span>
-              </div>
-              <div className="receipt-item">
-                <label>Cloud Database</label>
-                <span style={{ color: "var(--primary)", fontWeight: 600 }}>
-                  {filedResult._storage || "Azure Table Storage"}
-                </span>
-              </div>
-            </div>
-
-            {filedResult.report_blob_url && (
-              <div style={{ marginTop: "1rem", padding: "0.75rem 1rem", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                <div>
-                  <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#166534" }}>☁️ Official Grievance Dossier Archived in Azure Blob Vault</span>
-                  <div style={{ fontSize: "0.75rem", color: "#15803d" }}>Permanent cloud audit file registered for this complaint</div>
-                </div>
-                <a
-                  href={filedResult.report_blob_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+      {/* =====================================================================
+          CARD 3: OFFICIAL VERIFIED DIGITAL TICKET (CERTIFICATE)
+          ===================================================================== */}
+      {filedResult && (
+        <section ref={ticketCardRef} className="ticket-credential-card">
+          <header className="ticket-header-row">
+            <div>
+              <span className="section-tag" style={{ color: "var(--emerald-dark)" }}>
+                <CheckCircle2 size={14} />
+                <span>Phase 3 • Grievance Registered & Filed</span>
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "4px" }}>
+                <span className="ticket-docket-badge">{filedResult.tracking_id}</span>
+                <button
+                  type="button"
                   className="btn btn-secondary btn-sm"
-                  style={{ fontSize: "0.75rem", padding: "0.3rem 0.75rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
+                  onClick={() => copyToClipboard(filedResult.tracking_id)}
+                  title="Copy Docket ID"
                 >
-                  <span>📑</span> View Official Dossier (JSON) ↗
-                </a>
+                  {copiedId ? <Check size={13} color="var(--emerald)" /> : <Copy size={13} />}
+                  <span>{copiedId ? "Copied" : "Copy"}</span>
+                </button>
               </div>
-            )}
+            </div>
 
-            <div style={{ marginTop: "1rem", textAlign: "right" }}>
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={() => onNavigateToTracker(filedResult.tracking_id, filedResult)}
-              >
-                Track in Live Tracker →
-              </button>
+            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+              <span className="badge badge-success">
+                ● Status: {filedResult.status || "Filed"}
+              </span>
+              <span className="badge badge-primary">
+                {filedResult._storage || "Azure Table Storage"}
+              </span>
+            </div>
+          </header>
+
+          {/* Ticket Information Grid */}
+          <div className="ticket-grid">
+            <div className="meta-cell">
+              <span className="meta-label">Citizen</span>
+              <span className="meta-value">{filedResult.citizen_name || "Citizen"}</span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Assigned Department</span>
+              <span className="meta-value">{filedResult.department_name || "Municipal Authority"}</span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Statutory SLA Target</span>
+              <span className="meta-value" style={{ color: "var(--amber)" }}>
+                {filedResult.sla_target_days ? `${filedResult.sla_target_days} Days` : "Standard SLA"}
+              </span>
+            </div>
+            <div className="meta-cell">
+              <span className="meta-label">Target Completion Date</span>
+              <span className="meta-value">
+                {filedResult.sla_deadline ? new Date(filedResult.sla_deadline).toLocaleDateString() : "Pending"}
+              </span>
             </div>
           </div>
-        )}
-      </section>
+
+          {/* Summary Box */}
+          <div style={{ background: "var(--surface-subtle)", padding: "1.25rem", borderRadius: "8px", border: "1px solid var(--slate-200)", marginBottom: "1.75rem" }}>
+            <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase", color: "var(--slate-500)", display: "block", marginBottom: "4px" }}>
+              Registered Summary:
+            </span>
+            <p style={{ fontSize: "0.9rem", color: "var(--slate-800)", margin: 0 }}>
+              "{filedResult.complaint_text}"
+            </p>
+          </div>
+
+          {/* Action Bar */}
+          <div className="ticket-action-bar">
+            {filedResult.report_blob_url && (
+              <a
+                href={filedResult.report_blob_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary btn-sm"
+              >
+                <ExternalLink size={14} />
+                <span>Azure Blob Audit Dossier</span>
+              </a>
+            )}
+
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => onNavigateToTracker(filedResult.tracking_id, filedResult)}
+            >
+              <Search size={15} />
+              <span>Track in Real-Time Lifecycle</span>
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

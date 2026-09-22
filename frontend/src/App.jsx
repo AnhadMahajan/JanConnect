@@ -7,6 +7,9 @@ import StatusTracker from "./components/StatusTracker";
 import DepartmentMatrix from "./components/DepartmentMatrix";
 import OfficerDesk from "./components/OfficerDesk";
 import AdminLoginModal from "./components/AdminLoginModal";
+import PolicyClarifier from "./components/PolicyClarifier";
+import { Sparkles, BookOpen, Search, FileText, Building2 } from "lucide-react";
+import gsap from "gsap";
 
 const DEFAULT_CHANDIGARH_COMPLAINTS = [
   {
@@ -83,27 +86,6 @@ export default function App() {
   // Dynamic Department Catalog (Fetched directly from Azure Table Storage / local)
   const [departmentsList, setDepartmentsList] = useState([]);
 
-  // Policy Clarifier & Doubts Q&A State
-  const [samplePolicies, setSamplePolicies] = useState([]);
-  const [activePolicyTitle, setActivePolicyTitle] = useState("");
-  const [activePolicyText, setActivePolicyText] = useState("");
-  const [activePolicyDept, setActivePolicyDept] = useState("");
-  const [policyUploadMode, setPolicyUploadMode] = useState("preset"); // "preset", "upload", "paste"
-  const [policyPasteText, setPolicyPasteText] = useState("");
-  const [selectedPolicyFile, setSelectedPolicyFile] = useState(null);
-  const [policyExtractLoading, setPolicyExtractLoading] = useState(false);
-  const policyFileInputRef = useRef(null);
-  const [policyQuestion, setPolicyQuestion] = useState("");
-  const [policyAsking, setPolicyAsking] = useState(false);
-  const [policyAnswerResult, setPolicyAnswerResult] = useState(null);
-  const [targetLang, setTargetLang] = useState("en");
-  const [translatedAnswer, setTranslatedAnswer] = useState("");
-  const [translatingAnswer, setTranslatingAnswer] = useState(false);
-  const [copiedPolicyAnswer, setCopiedPolicyAnswer] = useState(false);
-  const [isPolicyRecording, setIsPolicyRecording] = useState(false);
-  const [showDocPreview, setShowDocPreview] = useState(false);
-  const [policyBlobUrl, setPolicyBlobUrl] = useState("");
-
   // Load initial departments, complaints, and documents
   useEffect(() => {
     fetch("/api/departments")
@@ -173,183 +155,6 @@ export default function App() {
     }
   };
 
-  // Policy Clarifier Handlers
-  const loadSamplePolicies = async () => {
-    try {
-      const res = await fetch("/api/policy/samples");
-      const data = await res.json();
-      setSamplePolicies(data);
-      if (data.length > 0 && !activePolicyText) {
-        handleSelectSamplePolicy(data[0].id);
-      }
-    } catch (e) {
-      console.error("Error loading sample policies:", e);
-    }
-  };
-
-  const handleSelectSamplePolicy = async (id) => {
-    try {
-      const res = await fetch(`/api/policy/sample/${id}`);
-      const data = await res.json();
-      setActivePolicyTitle(data.title);
-      setActivePolicyText(data.text);
-      setActivePolicyDept(data.department);
-      setPolicyBlobUrl("");
-      setPolicyAnswerResult(null);
-      setTranslatedAnswer("");
-    } catch (e) {
-      console.error("Error selecting sample policy:", e);
-    }
-  };
-
-  const handleExtractPolicyFile = async () => {
-    if (!selectedPolicyFile) {
-      alert("Please choose a policy circular file (PDF/Image) first.");
-      return;
-    }
-    setPolicyExtractLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedPolicyFile);
-      const res = await fetch("/api/policy/extract", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      setActivePolicyTitle(data.title || selectedPolicyFile.name);
-      setActivePolicyText(data.text);
-      setActivePolicyDept("Uploaded Government Circular");
-      setPolicyBlobUrl(data.blob_url || "");
-      setPolicyAnswerResult(null);
-      setTranslatedAnswer("");
-    } catch (e) {
-      console.error("Error extracting policy file:", e);
-      alert("Failed to analyze policy file.");
-    } finally {
-      setPolicyExtractLoading(false);
-    }
-  };
-
-  const handleApplyPastedPolicy = async () => {
-    if (!policyPasteText.trim()) {
-      alert("Please paste government policy text first.");
-      return;
-    }
-    setPolicyExtractLoading(true);
-    try {
-      const res = await fetch("/api/policy/extract", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: policyPasteText.trim() }),
-      });
-      const data = await res.json();
-      setActivePolicyTitle(data.title || "Custom Policy Notification");
-      setActivePolicyText(data.text || policyPasteText.trim());
-      setActivePolicyDept("Custom Policy Notification");
-      setPolicyBlobUrl(data.blob_url || "");
-      setPolicyAnswerResult(null);
-      setTranslatedAnswer("");
-    } catch (e) {
-      const lines = policyPasteText.trim().split("\n");
-      setActivePolicyTitle(lines[0].slice(0, 80));
-      setActivePolicyText(policyPasteText.trim());
-      setActivePolicyDept("Custom Policy Notification");
-      setPolicyBlobUrl("");
-      setPolicyAnswerResult(null);
-      setTranslatedAnswer("");
-    } finally {
-      setPolicyExtractLoading(false);
-    }
-  };
-
-  const handleAskPolicyDoubt = async (queryText) => {
-    const q = queryText || policyQuestion;
-    if (!q || !q.trim()) {
-      alert("Please type or speak your doubt regarding the policy.");
-      return;
-    }
-    if (!activePolicyText) {
-      alert("Please select or upload a government policy document first.");
-      return;
-    }
-    setPolicyAsking(true);
-    setTranslatedAnswer("");
-    setTargetLang("en");
-    try {
-      const res = await fetch("/api/policy/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          policy_text: activePolicyText,
-          question: q.trim(),
-          language: "en",
-        }),
-      });
-      const data = await res.json();
-      setPolicyAnswerResult(data);
-    } catch (e) {
-      console.error("Error asking policy doubt:", e);
-      alert("Error getting answer from policy engine.");
-    } finally {
-      setPolicyAsking(false);
-    }
-  };
-
-  const handleTranslatePolicyAnswer = async (langCode) => {
-    if (!policyAnswerResult || !policyAnswerResult.answer) return;
-    if (langCode === "en") {
-      setTargetLang("en");
-      setTranslatedAnswer("");
-      return;
-    }
-    setTargetLang(langCode);
-    setTranslatingAnswer(true);
-    try {
-      const res = await fetch("/api/policy/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: policyAnswerResult.answer,
-          target_lang: langCode,
-        }),
-      });
-      const data = await res.json();
-      setTranslatedAnswer(data.translated_text || "");
-    } catch (e) {
-      console.error("Error translating answer:", e);
-    } finally {
-      setTranslatingAnswer(false);
-    }
-  };
-
-  const togglePolicySpeechRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please use Chrome/Edge or type directly.");
-      return;
-    }
-    if (isPolicyRecording) {
-      setIsPolicyRecording(false);
-      return;
-    }
-    try {
-      const rec = new SpeechRecognition();
-      rec.continuous = false;
-      rec.interimResults = false;
-      rec.lang = "hi-IN";
-      rec.onstart = () => setIsPolicyRecording(true);
-      rec.onend = () => setIsPolicyRecording(false);
-      rec.onerror = () => setIsPolicyRecording(false);
-      rec.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        setPolicyQuestion((prev) => (prev ? prev + " " + transcript : transcript));
-      };
-      rec.start();
-    } catch (e) {
-      setIsPolicyRecording(false);
-    }
-  };
-
   // Determine current active pipeline step
   const currentStep = filedResult ? 5 : routingResult ? 4 : selectedComplaintId ? 2 : 1;
 
@@ -374,487 +179,132 @@ export default function App() {
           />
         ) : (
           <>
-            {/* Citizen Navigation Tabs */}
+            {/* Citizen Navigation Tabs with clear iconography and spacing */}
             <nav className="nav-tabs" aria-label="Sections">
               <button
+                type="button"
                 className={`tab-btn ${activeTab === "navigator" ? "active" : ""}`}
                 onClick={() => setActiveTab("navigator")}
               >
-                <span>⚡</span> Grievance Navigator
+                <Sparkles size={16} />
+                <span>Grievance Navigator</span>
               </button>
               <button
-                className={`tab-btn ${activeTab === "documents" ? "active" : ""}`}
-                onClick={() => setActiveTab("documents")}
+                type="button"
+                className={`tab-btn ${activeTab === "policy_qa" ? "active" : ""}`}
+                onClick={() => setActiveTab("policy_qa")}
               >
-                <span>📄</span> Document Intelligence (Stage 2)
+                <BookOpen size={16} />
+                <span>Policy Clarifier</span>
               </button>
               <button
+                type="button"
                 className={`tab-btn ${activeTab === "tracker" ? "active" : ""}`}
                 onClick={() => setActiveTab("tracker")}
               >
-                <span>🔍</span> Track Status (Stage 5)
+                <Search size={16} />
+                <span>Live Tracker</span>
               </button>
               <button
-                className={`tab-btn ${activeTab === "policy_qa" ? "active" : ""}`}
-                onClick={() => {
-                  setActiveTab("policy_qa");
-                  if (samplePolicies.length === 0) loadSamplePolicies();
-                }}
+                type="button"
+                className={`tab-btn ${activeTab === "documents" ? "active" : ""}`}
+                onClick={() => setActiveTab("documents")}
               >
-                <span>📜</span> Policy Clarifier & Q&A
+                <FileText size={16} />
+                <span>Document OCR</span>
               </button>
               <button
+                type="button"
                 className={`tab-btn ${activeTab === "departments" ? "active" : ""}`}
                 onClick={() => setActiveTab("departments")}
               >
-                <span>🏛️</span> Chandigarh Authorities
+                <Building2 size={16} />
+                <span>Chandigarh Directory</span>
               </button>
             </nav>
 
-        {/* TAB 1: CHANDIGARH GRIEVANCE NAVIGATOR */}
-        {activeTab === "navigator" && (
-          <div>
-            <PipelineStepper currentStep={currentStep} />
-            <GrievanceNavigator
-              complaints={complaints}
-              selectedComplaintId={selectedComplaintId}
-              setSelectedComplaintId={setSelectedComplaintId}
-              routingResult={routingResult}
-              setRoutingResult={setRoutingResult}
-              filedResult={filedResult}
-              setFiledResult={setFiledResult}
-              loading={loading}
-              setLoading={setLoading}
-              filingLoading={filingLoading}
-              setFilingLoading={setFilingLoading}
-              onNavigateToTracker={handleNavigateToTracker}
-            />
-          </div>
-        )}
-
-        {/* TAB 2: CITIZEN DOCUMENT INTELLIGENCE (STAGE 2) */}
-        {activeTab === "documents" && (
-          <DocumentIntelligence
-            availableDocs={availableDocs}
-            extractedDocs={extractedDocs}
-            setExtractedDocs={setExtractedDocs}
-            docLoading={docLoading}
-            setDocLoading={setDocLoading}
-          />
-        )}
-
-        {/* TAB 3: TRACK GRIEVANCE STATUS (STAGE 5) */}
-        {activeTab === "tracker" && (
-          <StatusTracker
-            lookupId={lookupId}
-            setLookupId={setLookupId}
-            trackedStatus={trackedStatus}
-            setTrackedStatus={setTrackedStatus}
-            trackingLoading={trackingLoading}
-            setTrackingLoading={setTrackingLoading}
-          />
-        )}
-
-        {/* TAB 4: POLICY CLARIFIER & DOUBTS Q&A */}
-        {activeTab === "policy_qa" && (
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <h2 className="card-title">
-                  <span>📜</span> Government Policy Clarifier & Doubts Q&A
-                </h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.25rem" }}>
-                  Ask questions about government schemes, rules, and circulars with clause-by-clause legal grounding and instant multi-language translation.
-                </p>
-              </div>
-              <span className="badge badge-primary">AI Legal Specialist</span>
-            </div>
-
-            {/* Ingestion Mode Toggle */}
-            <div className="mode-toggle-group" style={{ marginBottom: "1.5rem" }}>
-              <button
-                className={`mode-btn ${policyUploadMode === "preset" ? "active" : ""}`}
-                onClick={() => setPolicyUploadMode("preset")}
-              >
-                🏛️ Official Schemes Library
-              </button>
-              <button
-                className={`mode-btn ${policyUploadMode === "upload" ? "active" : ""}`}
-                onClick={() => setPolicyUploadMode("upload")}
-              >
-                📁 Upload Circular (PDF/Image)
-              </button>
-              <button
-                className={`mode-btn ${policyUploadMode === "paste" ? "active" : ""}`}
-                onClick={() => setPolicyUploadMode("paste")}
-              >
-                ✍️ Paste Policy Text
-              </button>
-            </div>
-
-            {/* PRESET SCHEMES SELECTOR */}
-            {policyUploadMode === "preset" && (
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label className="form-label" style={{ marginBottom: "0.5rem" }}>
-                  Select an Official Government Welfare Policy to Clarify:
-                </label>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "0.85rem" }}>
-                  {samplePolicies.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => handleSelectSamplePolicy(p.id)}
-                      className={`complaint-card policy-sample-card ${activePolicyTitle === p.title ? "selected" : ""}`}
-                    >
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-main)", marginBottom: "0.3rem" }}>
-                          {p.title}
-                        </div>
-                        <div style={{ fontSize: "0.78rem", color: "var(--primary)", fontWeight: 600, marginBottom: "0.5rem" }}>
-                          🏛️ {p.department}
-                        </div>
-                        <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: 0, lineHeight: 1.45 }}>
-                          {p.summary}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            {/* TAB 1: CHANDIGARH GRIEVANCE NAVIGATOR */}
+            {activeTab === "navigator" && (
+              <div className="tab-pane">
+                <PipelineStepper currentStep={currentStep} />
+                <GrievanceNavigator
+                  complaints={complaints}
+                  selectedComplaintId={selectedComplaintId}
+                  setSelectedComplaintId={setSelectedComplaintId}
+                  routingResult={routingResult}
+                  setRoutingResult={setRoutingResult}
+                  filedResult={filedResult}
+                  setFiledResult={setFiledResult}
+                  loading={loading}
+                  setLoading={setLoading}
+                  filingLoading={filingLoading}
+                  setFilingLoading={setFilingLoading}
+                  onNavigateToTracker={handleNavigateToTracker}
+                />
               </div>
             )}
 
-            {/* UPLOAD CIRCULAR (PDF/IMAGE) */}
-            {policyUploadMode === "upload" && (
-              <div className="manual-form-card" style={{ marginBottom: "1.5rem" }}>
-                <div className="form-group" style={{ marginBottom: "1rem" }}>
-                  <label className="form-label">Upload Policy Notification / Gazette / Circular (PDF, PNG, JPG)</label>
-                  <input
-                    type="file"
-                    ref={policyFileInputRef}
-                    accept=".pdf,image/png,image/jpeg"
-                    onChange={(e) => setSelectedPolicyFile(e.target.files[0] || null)}
-                    className="form-input"
-                  />
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
-                    Layout-aware OCR extracts all clauses, sections, eligibility conditions, and statutory rules.
-                  </div>
-                </div>
-
-                <button
-                  className="btn btn-primary"
-                  onClick={handleExtractPolicyFile}
-                  disabled={policyExtractLoading || !selectedPolicyFile}
-                >
-                  {policyExtractLoading ? "Analyzing Circular with Document Intelligence..." : "🔍 Analyze & Ingest Circular"}
-                </button>
+            {/* TAB 2: POLICY CLARIFIER & CITIZEN DOUBTS */}
+            {activeTab === "policy_qa" && (
+              <div className="tab-pane">
+                <PolicyClarifier />
               </div>
             )}
 
-            {/* PASTE TEXT OPTION */}
-            {policyUploadMode === "paste" && (
-              <div className="manual-form-card" style={{ marginBottom: "1.5rem" }}>
-                <div className="form-group" style={{ marginBottom: "0.75rem" }}>
-                  <label className="form-label">Official Circular / Policy Text</label>
-                  <textarea
-                    placeholder="Paste full text of municipal notification, subsidy circular, or statutory gazette here..."
-                    value={policyPasteText}
-                    onChange={(e) => setPolicyPasteText(e.target.value)}
-                    className="form-textarea"
-                    style={{ minHeight: 140 }}
-                  ></textarea>
-                </div>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleApplyPastedPolicy}
-                  disabled={!policyPasteText.trim()}
-                >
-                  ✓ Load Custom Policy Document
-                </button>
+            {/* TAB 3: TRACK GRIEVANCE STATUS (STAGE 5) */}
+            {activeTab === "tracker" && (
+              <div className="tab-pane">
+                <StatusTracker
+                  lookupId={lookupId}
+                  setLookupId={setLookupId}
+                  trackedStatus={trackedStatus}
+                  setTrackedStatus={setTrackedStatus}
+                  trackingLoading={trackingLoading}
+                  setTrackingLoading={setTrackingLoading}
+                />
               </div>
             )}
 
-            {/* ACTIVE POLICY SUMMARY CARD */}
-            {activePolicyText && (
-              <div className="policy-active-card">
-                <div className="policy-active-header">
-                  <div>
-                    <span style={{ fontSize: "0.72rem", textTransform: "uppercase", fontWeight: 700, color: "var(--primary)" }}>
-                      Current Grounding Document ({activePolicyDept})
-                    </span>
-                    <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-main)", marginTop: "0.2rem" }}>
-                      {activePolicyTitle}
-                    </h3>
-                  </div>
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", background: "#e2e8f0", padding: "0.2rem 0.6rem", borderRadius: "4px", color: "#475569" }}>
-                      {activePolicyText.length.toLocaleString()} characters
-                    </span>
-                    <button
-                      className="btn btn-secondary btn-sm"
-                      style={{ fontSize: "0.75rem", padding: "0.2rem 0.6rem" }}
-                      onClick={() => setShowDocPreview(!showDocPreview)}
-                    >
-                      {showDocPreview ? "Hide Preview ▲" : "View Text Preview ▼"}
-                    </button>
-                  </div>
-                </div>
-
-                {policyBlobUrl && (
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <a
-                      href={policyBlobUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="blob-link-badge"
-                    >
-                      <span>☁️</span> <strong>Stored in Azure Blob Vault:</strong> <code>{policyBlobUrl.split('/').pop()}</code> ↗
-                    </a>
-                  </div>
-                )}
-
-                {showDocPreview && (
-                  <div className="policy-doc-preview-box">
-                    {activePolicyText}
-                  </div>
-                )}
+            {/* TAB 4: CITIZEN DOCUMENT INTELLIGENCE (STAGE 2) */}
+            {activeTab === "documents" && (
+              <div className="tab-pane">
+                <DocumentIntelligence
+                  availableDocs={availableDocs}
+                  extractedDocs={extractedDocs}
+                  setExtractedDocs={setExtractedDocs}
+                  docLoading={docLoading}
+                  setDocLoading={setDocLoading}
+                />
               </div>
             )}
 
-            {/* STEP 2: INTERACTIVE DOUBTS & Q&A CONSOLE */}
-            <div className="qa-console-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                <label className="form-label" style={{ margin: 0, fontSize: "0.95rem" }}>
-                  ❓ What is your doubt or question regarding this policy?
-                </label>
-                <button
-                  type="button"
-                  className={`mic-btn ${isPolicyRecording ? "recording" : ""}`}
-                  onClick={togglePolicySpeechRecognition}
-                  title="Ask your doubt using voice in Hindi or English"
-                >
-                  <span>🎙️</span>
-                  <span>{isPolicyRecording ? "Listening..." : "Ask with Voice (Hindi/English)"}</span>
-                </button>
-              </div>
-
-              {/* Sample Doubt Chips */}
-              <div className="doubt-chips-group">
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", alignSelf: "center", marginRight: "0.2rem" }}>
-                  Suggested Doubts:
-                </span>
-                {activePolicyTitle.includes("Water") ? (
-                  <>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("What happens if my consumption is 21,000 litres instead of 20,000?"); handleAskPolicyDoubt("What happens if my consumption is 21,000 litres instead of 20,000?"); }}>
-                      💧 What if I consume 21,000 litres?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("Who is eligible for the 20kL free water scheme?"); handleAskPolicyDoubt("Who is eligible for the 20kL free water scheme?"); }}>
-                      💧 Who is eligible?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("What is the rule if my water meter is defective or stopped?"); handleAskPolicyDoubt("What is the rule if my water meter is defective or stopped?"); }}>
-                      💧 Rule for defective water meters?
-                    </button>
-                  </>
-                ) : activePolicyTitle.includes("Surya") ? (
-                  <>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("How much subsidy will I get for a 3 kW solar system?"); handleAskPolicyDoubt("How much subsidy will I get for a 3 kW solar system?"); }}>
-                      ⚡ Subsidy for 3 kW solar?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("What documents are required to apply for PM Surya Ghar?"); handleAskPolicyDoubt("What documents are required to apply for PM Surya Ghar?"); }}>
-                      ⚡ Required documents to apply?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("What is the DISCOM timeline to install net meters?"); handleAskPolicyDoubt("What is the DISCOM timeline to install net meters?"); }}>
-                      ⚡ Net meter installation timeline?
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("What is the penalty if the PIO delays the response beyond 30 days?"); handleAskPolicyDoubt("What is the penalty if the PIO delays the response beyond 30 days?"); }}>
-                      📜 Penalty for PIO delay?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("Are BPL cardholders exempt from RTI fees?"); handleAskPolicyDoubt("Are BPL cardholders exempt from RTI fees?"); }}>
-                      📜 Are BPL citizens exempt?
-                    </button>
-                    <button type="button" className="doubt-chip" onClick={() => { setPolicyQuestion("When can I file a First Appeal under RTI?"); handleAskPolicyDoubt("When can I file a First Appeal under RTI?"); }}>
-                      📜 When to file First Appeal?
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div className="form-group" style={{ marginBottom: "1rem" }}>
-                <textarea
-                  placeholder="Type your question or doubt here in any language (e.g. 'Can commercial shops apply for this?' or 'Kya mujhe subsidised rate milega?')..."
-                  value={policyQuestion}
-                  onChange={(e) => setPolicyQuestion(e.target.value)}
-                  className="form-textarea"
-                  style={{ minHeight: "85px" }}
-                ></textarea>
-              </div>
-
-              <button
-                className="btn btn-primary"
-                onClick={() => handleAskPolicyDoubt()}
-                disabled={policyAsking || !policyQuestion.trim() || !activePolicyText}
-                style={{ width: "100%", justifyContent: "center" }}
-              >
-                {policyAsking ? "Reasoning with GPT-5-mini Legal Specialist..." : "🔍 Clarify & Resolve Doubt"}
-              </button>
-            </div>
-
-            {/* STEP 3 & 4: GROUNDED ANSWER & MULTILINGUAL TRANSLATION TOOL */}
-            {policyAnswerResult && (
-              <div className="policy-answer-box">
-                <div className="policy-answer-header">
-                  <div>
-                    <strong style={{ fontSize: "1.05rem", color: "var(--primary)" }}>
-                      ✓ Official Grounded Policy Clarification
-                    </strong>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "2px" }}>
-                      Source: {policyAnswerResult.source}
-                    </div>
-                  </div>
-                  <span className="badge badge-success">Grounded & Verified</span>
-                </div>
-
-                {/* Cited Clauses Badges */}
-                {policyAnswerResult.cited_clauses && policyAnswerResult.cited_clauses.length > 0 && (
-                  <div className="cited-clauses-container">
-                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)" }}>
-                      📌 Cited Policy Clauses:
-                    </span>
-                    {policyAnswerResult.cited_clauses.map((clause, idx) => (
-                      <span key={idx} className="clause-tag">
-                        {clause}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Plain-Language Answer */}
-                <div className="policy-answer-text">
-                  {translatingAnswer ? (
-                    <div style={{ fontStyle: "italic", color: "var(--text-muted)", padding: "0.5rem 0" }}>
-                      Translating explanation into regional language...
-                    </div>
-                  ) : (
-                    translatedAnswer || policyAnswerResult.answer || (
-                      <div style={{ fontStyle: "italic", color: "var(--text-muted)" }}>
-                        No specific answer could be formulated for this query. Please consult the designated department nodal officer.
-                      </div>
-                    )
-                  )}
-                </div>
-
-                {/* MULTILINGUAL TRANSLATION TOOL */}
-                <div className="translation-toolbar-card">
-                  <div className="translation-toolbar-header">
-                    <div>
-                      <strong style={{ fontSize: "0.85rem", color: "#1e293b" }}>
-                        🌐 Multilingual Translation Tool
-                      </strong>
-                      <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                        Translate this official explanation into your native regional language:
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.55rem" }}
-                        onClick={() => {
-                          const textToCopy = translatedAnswer || policyAnswerResult.answer;
-                          navigator.clipboard.writeText(textToCopy);
-                          setCopiedPolicyAnswer(true);
-                          setTimeout(() => setCopiedPolicyAnswer(false), 2000);
-                        }}
-                      >
-                        {copiedPolicyAnswer ? "✓ Copied" : "📋 Copy"}
-                      </button>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.55rem" }}
-                        onClick={() => {
-                          const textToSpeak = translatedAnswer || policyAnswerResult.answer;
-                          const cleanText = textToSpeak.replace(/[#\*_]/g, "");
-                          const utterance = new SpeechSynthesisUtterance(cleanText);
-                          if (targetLang === "hi") utterance.lang = "hi-IN";
-                          else if (targetLang === "pa") utterance.lang = "pa-IN";
-                          else if (targetLang === "bn") utterance.lang = "bn-IN";
-                          else if (targetLang === "ta") utterance.lang = "ta-IN";
-                          else utterance.lang = "en-IN";
-                          window.speechSynthesis.speak(utterance);
-                        }}
-                      >
-                        🔊 Listen
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="lang-pills-row">
-                    <button
-                      className={`lang-pill-btn ${targetLang === "en" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("en")}
-                    >
-                      🌐 English
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "hi" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("hi")}
-                    >
-                      🇮🇳 हिन्दी (Hindi)
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "pa" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("pa")}
-                    >
-                      🇮🇳 ਪੰਜਾਬੀ (Punjabi)
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "bn" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("bn")}
-                    >
-                      🇮🇳 বাংলা (Bengali)
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "ta" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("ta")}
-                    >
-                      🇮🇳 தமிழ் (Tamil)
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "te" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("te")}
-                    >
-                      🇮🇳 తెలుగు (Telugu)
-                    </button>
-                    <button
-                      className={`lang-pill-btn ${targetLang === "mr" ? "active" : ""}`}
-                      onClick={() => handleTranslatePolicyAnswer("mr")}
-                    >
-                      🇮🇳 मराठी (Marathi)
-                    </button>
-                  </div>
-                </div>
+            {/* TAB 5: CHANDIGARH AUTHORITIES & POLICY MATRIX */}
+            {activeTab === "departments" && (
+              <div className="tab-pane">
+                <DepartmentMatrix departmentsList={departmentsList} />
               </div>
             )}
-          </div>
-        )}
-
-        {/* TAB 5: CHANDIGARH AUTHORITIES & POLICY MATRIX */}
-        {activeTab === "departments" && (
-          <DepartmentMatrix departmentsList={departmentsList} />
-        )}
           </>
         )}
       </main>
 
-      {/* Footer */}
+      {/* Clean Municipal Footer */}
       <footer className="app-footer">
-        <p>
-          <strong>Chandigarh JanConnect (ਚੰਡੀਗੜ੍ਹ ਜਨ ਕਨੈਕਟ / चंडीगढ़ जन कनेक्ट)</strong> — Civic Grievance Navigation System for The City Beautiful.
-        </p>
-        <p style={{ marginTop: "0.3rem", fontSize: "0.75rem", opacity: 0.8 }}>
-          Municipal Corporation Chandigarh (MCC) • Chandigarh Power Distribution Limited (CPDL) • Powered by Azure AI Foundry (gpt-5-mini) • Azure Document Intelligence • Azure Storage
-        </p>
+        <div className="footer-content">
+          <p className="footer-title">
+            <strong>Chandigarh JanConnect (ਚੰਡੀਗੜ੍ਹ ਜਨ ਕਨੈਕਟ / चंडीगढ़ जन कनेक्ट)</strong>
+          </p>
+          <p className="footer-sub">
+            Municipal Corporation Chandigarh (MCC) • Chandigarh Power Distribution Limited (CPDL) • Right to Service Act 2011 Redressal Bridge
+          </p>
+          <div className="footer-meta">
+            <span>Powered by Azure AI Foundry (gpt-5-mini)</span>
+            <span>•</span>
+            <span>Azure Document Intelligence</span>
+            <span>•</span>
+            <span>Azure Table Database</span>
+          </div>
+        </div>
       </footer>
 
       {/* Admin Login Dialog Modal */}

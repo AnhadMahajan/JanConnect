@@ -1,4 +1,21 @@
 import { useState, useEffect } from "react";
+import {
+  ShieldCheck,
+  Activity,
+  Clock,
+  CheckCircle2,
+  RefreshCw,
+  LogOut,
+  ArrowLeft,
+  Search,
+  Edit3,
+  Filter,
+  X,
+  FileText,
+  User,
+  HardHat,
+  AlertCircle,
+} from "lucide-react";
 
 export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpdated }) {
   const [adminComplaints, setAdminComplaints] = useState([]);
@@ -7,7 +24,7 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
   const [adminDeptFilter, setAdminDeptFilter] = useState("all");
   const [adminStatusFilter, setAdminStatusFilter] = useState("all");
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
-  
+
   // Status Edit Modal State
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [newStatusValue, setNewStatusValue] = useState("Assigned to Field Engineer");
@@ -82,32 +99,36 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
   });
 
   return (
-    <div className="card officer-desk-container">
+    <div className="card">
       {/* Top Banner with Navigation & Authenticated Status */}
-      <div className="card-header officer-desk-header">
+      <div className="card-header">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
             <h2 className="card-title" style={{ margin: 0 }}>
-              <span>🛡️</span> Municipal Officer Resolution Desk
+              <ShieldCheck size={24} color="var(--terracotta)" />
+              <span>Municipal Officer Resolution Desk</span>
             </h2>
-            <span className="badge badge-admin-active">
-              ● Officer Logged In
+            <span className="badge badge-success">
+              ● Officer Active
             </span>
           </div>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.35rem" }}>
+          <p className="card-subtitle">
             Official municipal administration portal for Chandigarh zonal officers, SDOs, and junior engineers.
           </p>
         </div>
 
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
           <button className="btn btn-secondary btn-sm" onClick={onBackToCitizen}>
-            ← Citizen Portal
+            <ArrowLeft size={14} />
+            <span>Citizen Portal</span>
           </button>
           <button className="btn btn-secondary btn-sm" onClick={loadAdminComplaints} disabled={adminLoading}>
-            {adminLoading ? "Refreshing..." : "🔄 Refresh Desk"}
+            <RefreshCw size={14} className={adminLoading ? "animate-spin" : ""} />
+            <span>Refresh</span>
           </button>
-          <button className="btn btn-secondary btn-sm btn-logout" onClick={onLogout} title="Log out of Admin Portal">
-            🚪 Logout
+          <button className="btn btn-secondary btn-sm" onClick={onLogout} title="Log out of Admin Portal">
+            <LogOut size={14} />
+            <span>Logout</span>
           </button>
         </div>
       </div>
@@ -116,28 +137,36 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
       {adminMetrics && (
         <div className="admin-kpi-grid">
           <div className="kpi-card">
-            <div className="kpi-icon" style={{ background: "rgba(79, 70, 229, 0.1)", color: "var(--primary)" }}>📋</div>
+            <div className="kpi-icon">
+              <FileText size={22} color="var(--cobalt)" />
+            </div>
             <div>
               <div className="kpi-value">{adminMetrics.total}</div>
               <div className="kpi-label">Total Grievances</div>
             </div>
           </div>
           <div className="kpi-card">
-            <div className="kpi-icon" style={{ background: "rgba(245, 158, 11, 0.1)", color: "#d97706" }}>⏳</div>
+            <div className="kpi-icon">
+              <Clock size={22} color="var(--amber)" />
+            </div>
             <div>
               <div className="kpi-value">{adminMetrics.pending_verification}</div>
               <div className="kpi-label">Pending Verification</div>
             </div>
           </div>
           <div className="kpi-card">
-            <div className="kpi-icon" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#2563eb" }}>👷</div>
+            <div className="kpi-icon">
+              <HardHat size={22} color="var(--terracotta)" />
+            </div>
             <div>
               <div className="kpi-value">{adminMetrics.in_progress}</div>
-              <div className="kpi-label">Assigned / In Progress</div>
+              <div className="kpi-label">Field Assigned</div>
             </div>
           </div>
           <div className="kpi-card">
-            <div className="kpi-icon" style={{ background: "rgba(16, 185, 129, 0.1)", color: "#059669" }}>✅</div>
+            <div className="kpi-icon">
+              <CheckCircle2 size={22} color="var(--emerald)" />
+            </div>
             <div>
               <div className="kpi-value">{adminMetrics.resolved}</div>
               <div className="kpi-label">Resolved & Closed</div>
@@ -147,49 +176,48 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
       )}
 
       {/* Search & Filter Controls */}
-      <div className="admin-controls-bar">
+      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
         <input
           type="text"
-          placeholder="Search by Tracking ID, Citizen Name, or Keyword..."
+          placeholder="Search by Tracking ID, Citizen Name, or Content..."
           value={adminSearchQuery}
           onChange={(e) => setAdminSearchQuery(e.target.value)}
-          className="admin-search-input"
+          className="form-input"
+          style={{ flex: 1, minWidth: 240 }}
         />
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <select
-            value={adminDeptFilter}
-            onChange={(e) => setAdminDeptFilter(e.target.value)}
-            className="form-input"
-            style={{ width: "auto" }}
-          >
-            <option value="all">All Departments</option>
-            <option value="water">💧 Water Supply (MCC)</option>
-            <option value="electricity">⚡ Electricity (CPDL)</option>
-            <option value="sanitation">🗑️ Sanitation (MOH)</option>
-            <option value="roads">🚧 Roads & B&R (MCC)</option>
-            <option value="rti">📜 RTI Cell</option>
-          </select>
+        <select
+          value={adminDeptFilter}
+          onChange={(e) => setAdminDeptFilter(e.target.value)}
+          className="form-input"
+          style={{ width: "auto", minWidth: 180 }}
+        >
+          <option value="all">All Departments</option>
+          <option value="water">Water Supply (MCC)</option>
+          <option value="electricity">Electricity (CPDL)</option>
+          <option value="sanitation">Sanitation (MOH)</option>
+          <option value="roads">Roads & B&R (MCC)</option>
+          <option value="rti">RTI Cell</option>
+        </select>
 
-          <select
-            value={adminStatusFilter}
-            onChange={(e) => setAdminStatusFilter(e.target.value)}
-            className="form-input"
-            style={{ width: "auto" }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="Filed">Filed</option>
-            <option value="Under Verification">Under Verification</option>
-            <option value="Assigned to Field Engineer">Assigned to Field Engineer</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </div>
+        <select
+          value={adminStatusFilter}
+          onChange={(e) => setAdminStatusFilter(e.target.value)}
+          className="form-input"
+          style={{ width: "auto", minWidth: 160 }}
+        >
+          <option value="all">All Statuses</option>
+          <option value="Filed">Filed</option>
+          <option value="Under Verification">Under Verification</option>
+          <option value="Assigned to Field Engineer">Assigned to Field Engineer</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
       </div>
 
       {/* Complaints Table */}
-      <div className="admin-table-container">
-        <table className="admin-table">
+      <div style={{ overflowX: "auto", border: "1px solid var(--slate-200)", borderRadius: "8px", background: "#ffffff" }}>
+        <table className="civic-data-table">
           <thead>
             <tr>
               <th>Tracking ID</th>
@@ -204,7 +232,7 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
           <tbody>
             {filteredComplaints.length === 0 ? (
               <tr>
-                <td colSpan="7" style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-muted)" }}>
+                <td colSpan="7" style={{ textAlign: "center", padding: "2.5rem", color: "var(--slate-500)" }}>
                   {adminLoading ? "Loading grievances from cloud database..." : "No grievances found matching the selected filters."}
                 </td>
               </tr>
@@ -212,21 +240,23 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
               filteredComplaints.map((c) => (
                 <tr key={c.tracking_id}>
                   <td>
-                    <code style={{ fontWeight: 700, color: "var(--primary)" }}>{c.tracking_id}</code>
+                    <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--slate-900)" }}>
+                      {c.tracking_id}
+                    </span>
                   </td>
                   <td>
-                    <strong>{c.citizen_name || "Chandigarh Citizen"}</strong>
+                    <strong style={{ color: "var(--slate-900)" }}>{c.citizen_name || "Citizen"}</strong>
                   </td>
                   <td>
-                    <span className="badge badge-secondary" style={{ fontSize: "0.76rem" }}>{c.department_name}</span>
+                    <span style={{ fontSize: "0.85rem", color: "var(--slate-700)" }}>{c.department_name}</span>
                   </td>
-                  <td style={{ maxWidth: 280, fontSize: "0.85rem", color: "#475569" }}>
+                  <td style={{ maxWidth: 280, fontSize: "0.85rem", color: "var(--slate-600)" }}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={c.complaint_text}>
                       {c.complaint_text}
                     </div>
                   </td>
                   <td>
-                    <span style={{ fontSize: "0.82rem", color: "#1e293b", fontWeight: 500 }}>
+                    <span style={{ fontSize: "0.82rem", color: "var(--slate-800)", fontWeight: 500 }}>
                       {c.assigned_officer || "Unassigned"}
                     </span>
                   </td>
@@ -234,47 +264,43 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
                     <span
                       className="badge"
                       style={{
-                        fontSize: "0.75rem",
-                        padding: "0.25rem 0.55rem",
+                        fontSize: "0.72rem",
+                        padding: "3px 8px",
                         background:
                           c.status === "Resolved"
-                            ? "#d1fae5"
+                            ? "var(--emerald-subtle)"
                             : c.status === "Assigned to Field Engineer"
-                            ? "#e0e7ff"
-                            : c.status === "Under Verification"
-                            ? "#fef3c7"
-                            : "#f1f5f9",
+                            ? "var(--cobalt-subtle)"
+                            : "var(--slate-100)",
                         color:
                           c.status === "Resolved"
-                            ? "#065f46"
+                            ? "var(--emerald-dark)"
                             : c.status === "Assigned to Field Engineer"
-                            ? "#3730a3"
-                            : c.status === "Under Verification"
-                            ? "#92400e"
-                            : "#475569",
+                            ? "var(--cobalt)"
+                            : "var(--slate-700)",
                         border:
                           c.status === "Resolved"
-                            ? "1px solid #a7f3d0"
+                            ? "1px solid var(--emerald-border)"
                             : c.status === "Assigned to Field Engineer"
-                            ? "1px solid #c7d2fe"
-                            : "1px solid #cbd5e1"
+                            ? "1px solid var(--cobalt-border)"
+                            : "1px solid var(--slate-200)",
                       }}
                     >
-                      ● {c.status}
+                      {c.status || "Filed"}
                     </span>
                   </td>
                   <td>
                     <button
                       className="btn btn-secondary btn-sm"
-                      style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
                       onClick={() => {
                         setEditingComplaint(c);
-                        setNewStatusValue(c.status);
-                        setOfficerNameValue(c.assigned_officer && c.assigned_officer !== "Unassigned" ? c.assigned_officer : "Er. V. Sharma (Junior Engineer)");
-                        setOfficerRemarksValue(c.remarks && c.remarks !== "No remarks" ? c.remarks : "");
+                        setNewStatusValue(c.status || "Assigned to Field Engineer");
+                        setOfficerNameValue(c.assigned_officer || "Er. V. Sharma (Junior Engineer)");
+                        setOfficerRemarksValue(c.officer_remarks || "");
                       }}
                     >
-                      ✏️ Update
+                      <Edit3 size={13} />
+                      <span>Update</span>
                     </button>
                   </td>
                 </tr>
@@ -284,27 +310,26 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
         </table>
       </div>
 
-      {/* Modal: Update Complaint Status Dialog */}
+      {/* Edit Status Modal */}
       {editingComplaint && (
         <div className="modal-overlay" onClick={() => setEditingComplaint(null)}>
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
             <div className="modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: "1.1rem" }}>Update Grievance Status</h3>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
-                  Ticket: <strong>{editingComplaint.tracking_id}</strong> ({editingComplaint.citizen_name})
-                </div>
+                <h3 className="modal-title">Update Grievance Status</h3>
+                <span style={{ fontSize: "0.8rem", color: "var(--slate-500)", fontFamily: "var(--font-mono)" }}>
+                  {editingComplaint.tracking_id} • {editingComplaint.citizen_name}
+                </span>
               </div>
               <button
-                className="btn btn-secondary btn-sm"
+                className="modal-close-btn"
                 onClick={() => setEditingComplaint(null)}
-                style={{ border: "none", background: "transparent", fontSize: "1.2rem", cursor: "pointer" }}
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleUpdateStatusSubmit} style={{ padding: "1.25rem" }}>
+            <form onSubmit={handleUpdateStatusSubmit}>
               <div className="form-group" style={{ marginBottom: "1rem" }}>
                 <label className="form-label">Workflow Status</label>
                 <select
@@ -334,7 +359,7 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: "1.25rem" }}>
+              <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label">Official Resolution Remarks</label>
                 <textarea
                   value={officerRemarksValue}
@@ -343,10 +368,10 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
                   placeholder="Detail site visit, actions taken, pipeline/transformer repair notes..."
                   style={{ minHeight: "85px" }}
                   required
-                ></textarea>
+                />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
                 <button
                   type="button"
                   className="btn btn-secondary"
@@ -356,7 +381,7 @@ export default function OfficerDesk({ onBackToCitizen, onLogout, onComplaintUpda
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={statusUpdating}>
-                  {statusUpdating ? "Saving to Azure..." : "✓ Confirm & Update Status"}
+                  {statusUpdating ? "Saving to Azure..." : "Confirm & Update Status"}
                 </button>
               </div>
             </form>

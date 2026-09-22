@@ -1,11 +1,24 @@
 import { useState, useRef } from "react";
+import {
+  FileText,
+  UploadCloud,
+  FileCheck,
+  Scan,
+  Droplets,
+  Zap,
+  Receipt,
+  Search,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function DocumentIntelligence({
   availableDocs,
   extractedDocs,
   setExtractedDocs,
   docLoading,
-  setDocLoading
+  setDocLoading,
 }) {
   const [docExtractMode, setDocExtractMode] = useState("file_upload");
   const [manualDocText, setManualDocText] = useState("");
@@ -15,15 +28,21 @@ export default function DocumentIntelligence({
 
   const docTemplates = [
     {
-      label: "💧 MCC Chandigarh Water Bill",
+      label: "MCC Chandigarh Water Bill",
+      icon: Droplets,
+      color: "var(--cobalt)",
       text: "MUNICIPAL CORPORATION CHANDIGARH (MCC)\nWATER SUPPLY & SEWERAGE BILL\nAccount Number: CHD-WTR-22B-8902\nConsumer Name: Virender Sharma\nService Address: House No 1240, Sector 22-B, Chandigarh - 160022\nSub-Division: Sub Division No. 2, Sector 22\nBilling Period: August 2026\nMeter Number: MTR-CH-88319\nPrevious Reading: 1420 KL\nCurrent Reading: 2890 KL\nUnits Consumed: 1470 KL\nWater Charges: Rs. 3,850\nSewerage Cess (20%): Rs. 770\nTotal Amount Due: Rs. 4,850\nDue Date: 15-09-2026\nPayment Portal: e-Sampark Chandigarh / mcchandigarh.gov.in"
     },
     {
-      label: "⚡ CPDL Chandigarh Electricity Bill",
+      label: "CPDL Electricity Bill",
+      icon: Zap,
+      color: "var(--amber)",
       text: "CHANDIGARH POWER DISTRIBUTION LIMITED (CPDL)\nELECTRICITY BILL - UT CHANDIGARH\nConsumer ID / Account No: CPDL-DS-35C-4410\nConsumer Name: Harpreet Singh\nService Address: House 312, Sector 35-C, Chandigarh - 160035\nOperation Sub-Division: Sector 34\nTariff Category: Domestic Supply (DS)\nSanctioned Load: 5.00 KW\nMeter Status: Normal\nUnits Billed: 480 kWh\nEnergy Charges: Rs. 2,160\nElectricity Duty & Taxes: Rs. 480\nTotal Payable Amount: Rs. 2,640\nDue Date: 22-09-2026\n24x7 Call Centre: 19121"
     },
     {
-      label: "🏛️ e-Sampark Citizen Receipt",
+      label: "e-Sampark Service Receipt",
+      icon: Receipt,
+      color: "var(--terracotta)",
       text: "CHANDIGARH ADMINISTRATION - e-SAMPARK CENTER\nCITIZEN SERVICE ACKNOWLEDGEMENT RECEIPT\nCenter Location: e-Sampark Center, Sector 17, Chandigarh\nToken Number: CHD-SMP-2026-10492\nService Name: MCC Public Grievance Registration - Pipeline Leakage\nApplicant Name: Pooja Verma\nMobile Number: 9876543210\nAddress: Sector 19-C, Chandigarh\nSubmission Date: 08-09-2026\nStatutory Redressal Target: 48 Hours\nNodal Authority: Sub-Divisional Officer (PH), Municipal Corporation Chandigarh"
     }
   ];
@@ -91,82 +110,47 @@ export default function DocumentIntelligence({
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">
-          <span>📄</span> Stage 2: Chandigarh Citizen Document Intelligence
-        </h2>
-        
-        <div className="mode-toggle-group">
+        <div>
+          <h2 className="card-title">
+            <Scan size={22} color="var(--terracotta)" />
+            <span>Chandigarh Citizen Document Intelligence</span>
+          </h2>
+          <p className="card-subtitle">
+            Extract structured civic entities (Consumer number, Sector/Ward, Amount due, Meter reading) from proof attachments using Azure Document Intelligence and Azure OpenAI.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: "0.5rem" }}>
           <button
-            className={`mode-btn ${docExtractMode === "manual_text" ? "active" : ""}`}
+            type="button"
+            className={`btn btn-sm ${docExtractMode === "file_upload" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setDocExtractMode("file_upload")}
+          >
+            <UploadCloud size={14} />
+            <span>Upload Bill</span>
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${docExtractMode === "manual_text" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setDocExtractMode("manual_text")}
           >
-            ✍️ Enter / Paste Bill Text
+            <FileText size={14} />
+            <span>Paste Text</span>
           </button>
           <button
-            className={`mode-btn ${docExtractMode === "upload" ? "active" : ""}`}
-            onClick={() => setDocExtractMode("upload")}
-          >
-            📤 Upload Bill (PDF/Image)
-          </button>
-          <button
-            className={`mode-btn ${docExtractMode === "samples" ? "active" : ""}`}
+            type="button"
+            className={`btn btn-sm ${docExtractMode === "samples" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setDocExtractMode("samples")}
           >
-            📂 Chandigarh Doc Library
+            <Receipt size={14} />
+            <span>Sample Library</span>
           </button>
         </div>
       </div>
 
-      <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-        Extract structured civic entities (Consumer number, Sector/Ward, Amount due, Meter reading, Sewerage cess) from proof attachments using Azure Document Intelligence and Azure OpenAI.
-      </p>
-
-      {/* OPTION 1: PASTE / ENTER DOCUMENT TEXT */}
-      {docExtractMode === "manual_text" && (
-        <div className="manual-form-card">
-          <div className="form-group" style={{ marginBottom: "0.75rem" }}>
-            <label className="form-label">Document Text / Receipt Data</label>
-            <textarea
-              placeholder="Paste or type text from an MCC water bill, CPDL electricity bill, or e-Sampark receipt here..."
-              value={manualDocText}
-              onChange={(e) => setManualDocText(e.target.value)}
-              className="form-textarea"
-              style={{ minHeight: 140 }}
-            ></textarea>
-          </div>
-
-          <div className="quick-chips-wrapper" style={{ marginBottom: "1.25rem" }}>
-            <div className="quick-chips-header">
-              <span>📄</span>
-              <span>Load Official Chandigarh Sample Template:</span>
-            </div>
-            <div className="quick-chips-list">
-              {docTemplates.map((tpl, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className="quick-chip"
-                  onClick={() => setManualDocText(tpl.text)}
-                >
-                  {tpl.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button
-            className="btn btn-primary"
-            onClick={handleExtractManualText}
-            disabled={docLoading || !manualDocText.trim()}
-          >
-            {docLoading ? "Extracting Entities with Azure OpenAI..." : "🔍 Extract Structured Entities"}
-          </button>
-        </div>
-      )}
-
-      {/* OPTION 2: UPLOAD FILE (PDF/IMAGE) */}
-      {docExtractMode === "upload" && (
-        <div className="manual-form-card">
+      {/* OPTION 1: UPLOAD FILE */}
+      {docExtractMode === "file_upload" && (
+        <div>
           <input
             type="file"
             ref={fileInputRef}
@@ -174,45 +158,97 @@ export default function DocumentIntelligence({
             accept=".pdf,.png,.jpg,.jpeg,.tiff"
             onChange={(e) => setSelectedFile(e.target.files[0])}
           />
-          
+
           <div
             className="dropzone-box"
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
           >
-            <div className="dropzone-icon">📁</div>
-            <strong style={{ fontSize: "1rem", color: "var(--primary)" }}>
+            <div className="dropzone-icon">
+              <UploadCloud size={44} />
+            </div>
+            <strong style={{ fontSize: "1rem", color: "var(--slate-900)", display: "block" }}>
               {selectedFile ? `Selected: ${selectedFile.name}` : "Click to Browse & Upload Document"}
             </strong>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
-              Supports PDF, JPG, PNG, TIFF (Stored in Azure Blob Storage & analyzed with Azure Document Intelligence)
+            <p style={{ fontSize: "0.82rem", color: "var(--slate-500)", marginTop: "4px" }}>
+              Supports PDF, PNG, JPG, TIFF. Files are processed with Azure Document Intelligence (`prebuilt-layout`) and stored in Azure Blob Storage.
             </p>
           </div>
 
           <button
-            className="btn btn-primary"
+            type="button"
+            className="btn-primary-action"
             onClick={handleExtractFile}
             disabled={docLoading || !selectedFile}
           >
-            {docLoading ? "Processing with Azure Document Intelligence..." : "🔍 Analyze with Azure Document Intelligence"}
+            <Scan size={16} />
+            <span>{docLoading ? "Processing with Azure Document Intelligence..." : "Analyze File with Azure Document Intelligence"}</span>
+          </button>
+        </div>
+      )}
+
+      {/* OPTION 2: PASTE TEXT */}
+      {docExtractMode === "manual_text" && (
+        <div>
+          <div className="form-group">
+            <label className="form-label">Paste Bill or Receipt Text</label>
+            <textarea
+              placeholder="Paste or type text from an MCC water bill, CPDL electricity bill, or e-Sampark receipt here..."
+              value={manualDocText}
+              onChange={(e) => setManualDocText(e.target.value)}
+              className="form-textarea"
+              style={{ minHeight: 140 }}
+            />
+          </div>
+
+          {/* Quick Templates */}
+          <div className="quick-scenarios-panel">
+            <span className="quick-scenarios-title">Load Sample Bill Template:</span>
+            <div className="quick-chips-row">
+              {docTemplates.map((tpl, i) => {
+                const Icon = tpl.icon;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className="quick-chip-btn"
+                    onClick={() => setManualDocText(tpl.text)}
+                  >
+                    <Icon size={13} color={tpl.color} />
+                    <span>{tpl.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn-primary-action"
+            onClick={handleExtractManualText}
+            disabled={docLoading || !manualDocText.trim()}
+          >
+            <Search size={16} />
+            <span>{docLoading ? "Extracting Entities with Azure OpenAI..." : "Extract Structured Entities"}</span>
           </button>
         </div>
       )}
 
       {/* LIVE EXTRACTION RESULT DISPLAY */}
-      {liveDocResult && (docExtractMode === "manual_text" || docExtractMode === "upload") && (
+      {liveDocResult && (docExtractMode === "file_upload" || docExtractMode === "manual_text") && (
         liveDocResult.error ? (
-          <div style={{ marginTop: "1.5rem", padding: "1.25rem", background: "var(--danger-light)", color: "#b91c1c", borderRadius: "var(--radius-md)", border: "1px solid #fecaca" }}>
+          <div style={{ marginTop: "1.75rem", padding: "1.25rem", background: "var(--critical-subtle)", color: "var(--critical)", borderRadius: "8px", border: "1px solid var(--critical-border)" }}>
             <strong>Extraction Error:</strong> {liveDocResult.error}
           </div>
         ) : (
-          <div className="doc-card" style={{ marginTop: "1.5rem", border: "2px solid #818cf8" }}>
+          <div className="doc-card" style={{ marginTop: "2rem", border: "2px solid var(--cobalt-border)" }}>
             <div className="doc-card-header">
               <div>
-                <strong style={{ fontSize: "1.05rem", color: "var(--primary)" }}>
-                  ✓ Extracted Document Entities
+                <strong style={{ fontSize: "1.05rem", color: "var(--slate-900)", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <CheckCircle2 size={16} color="var(--emerald)" />
+                  <span>Extracted Document Entities</span>
                 </strong>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  Source: {liveDocResult._source || "Azure Document Intelligence"}
+                <div style={{ fontSize: "0.76rem", color: "var(--slate-500)", marginTop: "2px" }}>
+                  Engine: {liveDocResult._source || "Azure Document Intelligence + OpenAI gpt-5-mini"}
                 </div>
               </div>
               <span className="badge badge-success">Verified Structured Fields</span>
@@ -234,52 +270,59 @@ export default function DocumentIntelligence({
         )
       )}
 
-      {/* OPTION 3: SAMPLES LIST */}
+      {/* OPTION 3: SAMPLES LIBRARY */}
       {docExtractMode === "samples" && (
         <div className="doc-grid">
-          {availableDocs.map((docId) => {
-            const isExtracted = Boolean(extractedDocs[docId]);
-            const docData = extractedDocs[docId];
-
-            return (
-              <div key={docId} className="doc-card">
-                <div className="doc-card-header">
-                  <div>
-                    <strong style={{ fontSize: "1rem", color: "var(--text-main)" }}>{docId.toUpperCase()}</strong>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                      {docId === "doc_1" ? "MCC Water Supply & Sewerage Bill" :
-                       docId === "doc_2" ? "CPDL Electricity Distribution Bill" :
-                       "Chandigarh e-Sampark Citizen Receipt"}
+          {availableDocs && availableDocs.length > 0 ? (
+            availableDocs.map((docId) => {
+              const extracted = extractedDocs[docId];
+              return (
+                <div key={docId} className="doc-card">
+                  <div className="doc-card-header">
+                    <div>
+                      <strong style={{ fontSize: "0.95rem", color: "var(--slate-900)" }}>
+                        {docId.toUpperCase()}
+                      </strong>
+                      <div style={{ fontSize: "0.75rem", color: "var(--slate-500)" }}>
+                        Archival Mock Document
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleExtractSampleDoc(docId)}
+                      disabled={docLoading}
+                    >
+                      {extracted ? "Re-Extract" : "Extract"}
+                    </button>
                   </div>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => handleExtractSampleDoc(docId)}
-                    disabled={docLoading}
-                  >
-                    {isExtracted ? "Re-Extract" : "🔍 Extract Entities"}
-                  </button>
-                </div>
 
-                {isExtracted && docData ? (
-                  <table className="doc-fields-table">
-                    <tbody>
-                      {Object.entries(docData).map(([key, val]) => (
-                        <tr key={key}>
-                          <td className="doc-field-name">{key.replace(/_/g, " ")}:</td>
-                          <td className="doc-field-value">{String(val)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div style={{ padding: "1.5rem 0", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>
-                    Click "Extract Entities" to run content understanding model.
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  {extracted ? (
+                    <table className="doc-fields-table">
+                      <tbody>
+                        {Object.entries(extracted)
+                          .filter(([k]) => !k.startsWith("_"))
+                          .map(([key, val]) => (
+                            <tr key={key}>
+                              <td className="doc-field-name">{key.replace(/_/g, " ")}:</td>
+                              <td className="doc-field-value">{String(val)}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p style={{ fontSize: "0.82rem", color: "var(--slate-500)", margin: "0.5rem 0" }}>
+                      Click extract to parse consumer details, meter numbers, and billing amounts.
+                    </p>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div style={{ padding: "2rem", textAlign: "center", color: "var(--slate-500)" }}>
+              No mock documents configured. Use Upload or Paste mode.
+            </div>
+          )}
         </div>
       )}
     </div>

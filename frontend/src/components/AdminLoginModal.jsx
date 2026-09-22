@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Landmark, ShieldCheck, AlertCircle, Zap, X, User, KeyRound } from "lucide-react";
 
 export default function AdminLoginModal({ onLoginSuccess, onClose }) {
   const [username, setUsername] = useState("");
@@ -23,7 +24,7 @@ export default function AdminLoginModal({ onLoginSuccess, onClose }) {
         setError("Invalid Officer ID or Password. Restricted to authorized municipal personnel.");
         setLoading(false);
       }
-    }, 400);
+    }, 350);
   };
 
   const handleFillDemo = () => {
@@ -35,28 +36,35 @@ export default function AdminLoginModal({ onLoginSuccess, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal-dialog admin-login-dialog"
+        className="modal-dialog"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 460 }}
+        style={{ maxWidth: 440 }}
       >
-        <div className="admin-login-header">
-          <div className="admin-seal-icon">🏛️</div>
-          <h3 className="admin-login-title">Chandigarh Municipal Officer Portal</h3>
-          <p className="admin-login-sub">
-            Restricted administrative gateway for Municipal Corporation Chandigarh (MCC) & CPDL Zonal Engineers.
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <div style={{ width: 48, height: 48, background: "var(--surface-subtle)", border: "1px solid var(--slate-200)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 0.75rem", color: "var(--slate-900)" }}>
+            <Landmark size={24} />
+          </div>
+          <h3 className="modal-title" style={{ fontSize: "1.25rem", textAlign: "center" }}>
+            Municipal Officer Portal
+          </h3>
+          <p style={{ fontSize: "0.82rem", color: "var(--slate-500)", marginTop: "4px" }}>
+            Restricted gateway for Municipal Corporation Chandigarh (MCC) & CPDL Zonal Engineers.
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="admin-login-form">
+        <form onSubmit={handleLogin}>
           {error && (
-            <div className="admin-login-error">
-              <span>⚠️</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--critical-subtle)", color: "var(--critical)", border: "1px solid var(--critical-border)", padding: "0.75rem 1rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.82rem" }}>
+              <AlertCircle size={16} />
               <span>{error}</span>
             </div>
           )}
 
           <div className="form-group" style={{ marginBottom: "1rem" }}>
-            <label className="form-label">Officer ID / Username</label>
+            <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <User size={13} />
+              <span>Officer ID / Username</span>
+            </label>
             <input
               type="text"
               className="form-input"
@@ -69,7 +77,10 @@ export default function AdminLoginModal({ onLoginSuccess, onClose }) {
           </div>
 
           <div className="form-group" style={{ marginBottom: "1.25rem" }}>
-            <label className="form-label">Password</label>
+            <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <KeyRound size={13} />
+              <span>Password</span>
+            </label>
             <input
               type="password"
               className="form-input"
@@ -81,21 +92,22 @@ export default function AdminLoginModal({ onLoginSuccess, onClose }) {
           </div>
 
           {/* Quick Demo Credentials Autofill Banner */}
-          <div className="demo-creds-banner">
-            <div className="demo-creds-text">
-              <span style={{ fontWeight: 700, color: "#1e1b4b" }}>Demo Credentials:</span>
-              <span> ID: <code>admin</code> • Password: <code>admin123</code></span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--surface-subtle)", border: "1px dashed var(--slate-300)", padding: "0.75rem 1rem", borderRadius: "8px", marginBottom: "1.25rem" }}>
+            <div style={{ fontSize: "0.78rem", color: "var(--slate-700)" }}>
+              <strong style={{ color: "var(--slate-900)" }}>Demo:</strong> <code>admin</code> / <code>admin123</code>
             </div>
             <button
               type="button"
-              className="btn btn-secondary btn-sm demo-autofill-btn"
+              className="btn btn-secondary btn-sm"
               onClick={handleFillDemo}
+              style={{ fontSize: "0.72rem", padding: "3px 8px" }}
             >
-              ⚡ Auto-Fill
+              <Zap size={11} color="var(--amber)" />
+              <span>Auto-Fill</span>
             </button>
           </div>
 
-          <div className="admin-login-actions">
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
             <button
               type="button"
               className="btn btn-secondary"
@@ -110,7 +122,7 @@ export default function AdminLoginModal({ onLoginSuccess, onClose }) {
               disabled={loading || !username || !password}
               style={{ minWidth: 140 }}
             >
-              {loading ? "Verifying..." : "🛡️ Log In to Desk"}
+              {loading ? "Verifying..." : "Log In to Desk"}
             </button>
           </div>
         </form>
