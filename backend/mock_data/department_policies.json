@@ -66,5 +66,17 @@
       "Overgrown tree branches obstructing streetlights or road signboards must be pruned within 5 working days.",
       "MCC ICCC Toll-Free: 0172-2787200 | e-Sampark: 1800-180-1725."
     ]
+  },
+  "rti": {
+    "department_name": "Right to Information (RTI) Cell",
+    "official_authority": "UT Administration Chandigarh",
+    "helpline": "e-Sampark: 1800-180-1725",
+    "office_location": "UT Secretariat, Sector 9, Chandigarh",
+    "keywords": ["rti", "right to information", "application", "public information", "records", "appeal"],
+    "policy_snippets": [
+      "An RTI application can be filed online or via any e-Sampark center in Chandigarh with the statutory ₹10 application fee.",
+      "The Public Information Officer (PIO) must furnish information within 30 days of application receipt.",
+      "If information concerns life or liberty of a person, it must be provided within 48 hours."
+    ]
   }
 }

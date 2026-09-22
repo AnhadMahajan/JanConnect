@@ -40,6 +40,18 @@
       "source_location": "L189"
     },
     {
+      "id": "backend_app_ask_policy_endpoint",
+      "label": "ask_policy_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "ask_policy_endpoint()",
+      "source_file": "backend/app.py",
+      "source_location": "L264"
+    },
+    {
       "id": "backend_app_extract",
       "label": "extract()",
       "_callable": true,
@@ -50,6 +62,30 @@
       "norm_label": "extract()",
       "source_file": "backend/app.py",
       "source_location": "L57"
+    },
+    {
+      "id": "backend_app_extract_file_endpoint",
+      "label": "extract_file_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "extract_file_endpoint()",
+      "source_file": "backend/app.py",
+      "source_location": "L76"
+    },
+    {
+      "id": "backend_app_extract_policy_endpoint",
+      "label": "extract_policy_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "extract_policy_endpoint()",
+      "source_file": "backend/app.py",
+      "source_location": "L234"
     },
     {
       "id": "backend_app_extract_text_endpoint",
@@ -64,28 +100,16 @@
       "source_location": "L66"
     },
     {
-      "id": "backend_app_file_complaint_endpoint",
-      "label": "file_complaint_endpoint()",
+      "id": "backend_app_get_policy_sample_endpoint",
+      "label": "get_policy_sample_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "file_complaint_endpoint()",
+      "norm_label": "get_policy_sample_endpoint()",
       "source_file": "backend/app.py",
-      "source_location": "L136"
-    },
-    {
-      "id": "backend_app_get_complaint",
-      "label": "get_complaint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "code",
-      "norm_label": "get_complaint()",
-      "source_file": "backend/app.py",
-      "source_location": "L43"
+      "source_location": "L225"
     },
     {
       "id": "backend_app_list_complaints",
@@ -100,88 +124,88 @@
       "source_location": "L37"
     },
     {
-      "id": "backend_app_resolve_complaint_from_request",
-      "label": "_resolve_complaint_from_request()",
+      "id": "backend_app_list_documents",
+      "label": "list_documents()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "_resolve_complaint_from_request()",
+      "norm_label": "list_documents()",
       "source_file": "backend/app.py",
-      "source_location": "L12"
+      "source_location": "L52"
     },
     {
-      "id": "backend_app_respond_endpoint",
-      "label": "respond_endpoint()",
+      "id": "backend_app_list_policy_samples_endpoint",
+      "label": "list_policy_samples_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "respond_endpoint()",
+      "norm_label": "list_policy_samples_endpoint()",
       "source_file": "backend/app.py",
-      "source_location": "L106"
+      "source_location": "L219"
     },
     {
-      "id": "backend_app_route_endpoint",
-      "label": "route_endpoint()",
+      "id": "backend_app_transcribe_audio_endpoint",
+      "label": "transcribe_audio_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "route_endpoint()",
+      "norm_label": "transcribe_audio_endpoint()",
       "source_file": "backend/app.py",
-      "source_location": "L93"
+      "source_location": "L120"
     },
     {
-      "id": "backend_services_intake_working_text",
-      "label": "working_text()",
+      "id": "backend_app_translate_policy_endpoint",
+      "label": "translate_policy_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "working_text()",
+      "norm_label": "translate_policy_endpoint()",
+      "source_file": "backend/app.py",
+      "source_location": "L281"
+    },
+    {
+      "id": "backend_services_intake_translate_to_language",
+      "label": "translate_to_language()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "translate_to_language()",
       "source_file": "backend/services/intake.py",
-      "source_location": "L152"
+      "source_location": "L58"
     },
     {
-      "id": "backend_services_routing_load_departments",
-      "label": "_load_departments()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "code",
-      "norm_label": "_load_departments()",
-      "source_file": "backend/services/routing.py",
-      "source_location": "L22"
-    },
-    {
-      "id": "backend_services_routing_route_complaint",
-      "label": "route_complaint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "code",
-      "norm_label": "route_complaint()",
-      "source_file": "backend/services/routing.py",
-      "source_location": "L27"
-    },
-    {
-      "id": "backend_app_get_policy_sample_endpoint",
-      "label": "get_policy_sample_endpoint()",
+      "id": "backend_services_policy_qa_answer_policy_doubt",
+      "label": "answer_policy_doubt()",
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "get_policy_sample_endpoint",
+      "community_name": "policy_qa.py",
       "file_type": "code",
-      "norm_label": "get_policy_sample_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L225"
+      "norm_label": "answer_policy_doubt()",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L179"
+    },
+    {
+      "id": "backend_services_policy_qa_extract_policy_content",
+      "label": "extract_policy_content()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "code",
+      "norm_label": "extract_policy_content()",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L118"
     },
     {
       "id": "backend_services_policy_qa_get_sample_policy",
@@ -189,23 +213,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "get_policy_sample_endpoint",
+      "community_name": "policy_qa.py",
       "file_type": "code",
       "norm_label": "get_sample_policy()",
       "source_file": "backend/services/policy_qa.py",
       "source_location": "L113"
     },
     {
-      "id": "backend_app_transcribe_audio_endpoint",
-      "label": "transcribe_audio_endpoint()",
+      "id": "backend_services_policy_qa_list_sample_policies",
+      "label": "list_sample_policies()",
       "_callable": true,
       "_origin": "ast",
-      "community": 13,
-      "community_name": "transcribe_audio_endpoint",
+      "community": 12,
+      "community_name": "policy_qa.py",
       "file_type": "code",
-      "norm_label": "transcribe_audio_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L120"
+      "norm_label": "list_sample_policies()",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L100"
     },
     {
       "id": "backend_services_speech_transcribe_audio",
@@ -213,107 +237,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "transcribe_audio_endpoint",
+      "community_name": "speech.py",
       "file_type": "code",
       "norm_label": "transcribe_audio()",
       "source_file": "backend/services/speech.py",
       "source_location": "L18"
     },
     {
-      "id": "backend_app_extract_policy_endpoint",
-      "label": "extract_policy_endpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "code",
-      "norm_label": "extract_policy_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L234"
-    },
-    {
-      "id": "backend_services_policy_qa_extract_policy_content",
-      "label": "extract_policy_content()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "code",
-      "norm_label": "extract_policy_content()",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L160"
-    },
-    {
-      "id": "backend_services_policy_qa_upload_policy_to_blob",
-      "label": "upload_policy_to_blob()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "code",
-      "norm_label": "upload_policy_to_blob()",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L121"
-    },
-    {
-      "id": "backend_app_ask_policy_endpoint",
-      "label": "ask_policy_endpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "ask_policy_endpoint",
-      "file_type": "code",
-      "norm_label": "ask_policy_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L266"
-    },
-    {
-      "id": "backend_services_policy_qa_answer_policy_doubt",
-      "label": "answer_policy_doubt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "ask_policy_endpoint",
-      "file_type": "code",
-      "norm_label": "answer_policy_doubt()",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L226"
-    },
-    {
-      "id": "backend_app_list_policy_samples_endpoint",
-      "label": "list_policy_samples_endpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "list_policy_samples_endpoint",
-      "file_type": "code",
-      "norm_label": "list_policy_samples_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L219"
-    },
-    {
-      "id": "backend_services_policy_qa_list_sample_policies",
-      "label": "list_sample_policies()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "list_policy_samples_endpoint",
-      "file_type": "code",
-      "norm_label": "list_sample_policies()",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L100"
-    },
-    {
-      "id": "backend_app_list_documents",
-      "label": "list_documents()",
+      "id": "backend_app_respond_endpoint",
+      "label": "respond_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
-      "norm_label": "list_documents()",
+      "norm_label": "respond_endpoint()",
       "source_file": "backend/app.py",
-      "source_location": "L52"
+      "source_location": "L106"
     },
     {
       "id": "backend_services_agents_load_departments",
@@ -321,7 +261,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
       "norm_label": "_load_departments()",
       "source_file": "backend/services/agents.py",
@@ -333,7 +273,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
       "norm_label": "mock_department_response()",
       "source_file": "backend/services/agents.py",
@@ -345,47 +285,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
       "norm_label": "_search_grounding_policies()",
       "source_file": "backend/services/agents.py",
       "source_location": "L55"
     },
     {
-      "id": "backend_services_extraction_extract_document",
-      "label": "extract_document()",
+      "id": "backend_services_routing_load_departments",
+      "label": "_load_departments()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
-      "norm_label": "extract_document()",
-      "source_file": "backend/services/extraction.py",
-      "source_location": "L28"
+      "norm_label": "_load_departments()",
+      "source_file": "backend/services/routing.py",
+      "source_location": "L22"
     },
     {
-      "id": "backend_services_extraction_list_available_mock_documents",
-      "label": "list_available_mock_documents()",
+      "id": "backend_services_routing_route_complaint",
+      "label": "route_complaint()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "code",
-      "norm_label": "list_available_mock_documents()",
-      "source_file": "backend/services/extraction.py",
-      "source_location": "L38"
-    },
-    {
-      "id": "backend_services_extraction_load_documents",
-      "label": "_load_documents()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
-      "file_type": "code",
-      "norm_label": "_load_documents()",
-      "source_file": "backend/services/extraction.py",
-      "source_location": "L23"
+      "norm_label": "route_complaint()",
+      "source_file": "backend/services/routing.py",
+      "source_location": "L27"
     },
     {
       "id": "backend_app_status_endpoint",
@@ -409,7 +337,7 @@
       "file_type": "code",
       "norm_label": "file_complaint()",
       "source_file": "backend/services/filing.py",
-      "source_location": "L170"
+      "source_location": "L112"
     },
     {
       "id": "backend_services_filing_get_status",
@@ -421,7 +349,7 @@
       "file_type": "code",
       "norm_label": "get_status()",
       "source_file": "backend/services/filing.py",
-      "source_location": "L230"
+      "source_location": "L166"
     },
     {
       "id": "backend_services_filing_get_table_client",
@@ -445,7 +373,7 @@
       "file_type": "code",
       "norm_label": "list_all_complaints()",
       "source_file": "backend/services/filing.py",
-      "source_location": "L270"
+      "source_location": "L205"
     },
     {
       "id": "backend_services_filing_seed_initial_complaints",
@@ -469,31 +397,55 @@
       "file_type": "code",
       "norm_label": "update_complaint_status()",
       "source_file": "backend/services/filing.py",
-      "source_location": "L318"
+      "source_location": "L252"
     },
     {
-      "id": "backend_services_filing_upload_grievance_report_to_blob",
-      "label": "upload_grievance_report_to_blob()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "filing.py",
-      "file_type": "code",
-      "norm_label": "upload_grievance_report_to_blob()",
-      "source_file": "backend/services/filing.py",
-      "source_location": "L112"
-    },
-    {
-      "id": "backend_app_translate_policy_endpoint",
-      "label": "translate_policy_endpoint()",
+      "id": "backend_app_file_complaint_endpoint",
+      "label": "file_complaint_endpoint()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
       "community_name": "intake.py",
       "file_type": "code",
-      "norm_label": "translate_policy_endpoint()",
+      "norm_label": "file_complaint_endpoint()",
       "source_file": "backend/app.py",
-      "source_location": "L283"
+      "source_location": "L136"
+    },
+    {
+      "id": "backend_app_get_complaint",
+      "label": "get_complaint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "code",
+      "norm_label": "get_complaint()",
+      "source_file": "backend/app.py",
+      "source_location": "L43"
+    },
+    {
+      "id": "backend_app_resolve_complaint_from_request",
+      "label": "_resolve_complaint_from_request()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "code",
+      "norm_label": "_resolve_complaint_from_request()",
+      "source_file": "backend/app.py",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_app_route_endpoint",
+      "label": "route_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "code",
+      "norm_label": "route_endpoint()",
+      "source_file": "backend/app.py",
+      "source_location": "L93"
     },
     {
       "id": "backend_services_intake_get_complaint",
@@ -544,28 +496,28 @@
       "source_location": "L25"
     },
     {
-      "id": "backend_services_intake_translate_to_language",
-      "label": "translate_to_language()",
+      "id": "backend_services_intake_working_text",
+      "label": "working_text()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
       "community_name": "intake.py",
       "file_type": "code",
-      "norm_label": "translate_to_language()",
+      "norm_label": "working_text()",
       "source_file": "backend/services/intake.py",
-      "source_location": "L58"
+      "source_location": "L152"
     },
     {
-      "id": "backend_app_extract_file_endpoint",
-      "label": "extract_file_endpoint()",
+      "id": "backend_services_extraction_extract_document",
+      "label": "extract_document()",
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "code",
-      "norm_label": "extract_file_endpoint()",
-      "source_file": "backend/app.py",
-      "source_location": "L76"
+      "norm_label": "extract_document()",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L28"
     },
     {
       "id": "backend_services_extraction_extract_document_from_bytes",
@@ -573,7 +525,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "code",
       "norm_label": "extract_document_from_bytes()",
       "source_file": "backend/services/extraction.py",
@@ -585,11 +537,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "code",
       "norm_label": "extract_document_from_text()",
       "source_file": "backend/services/extraction.py",
       "source_location": "L141"
+    },
+    {
+      "id": "backend_services_extraction_list_available_mock_documents",
+      "label": "list_available_mock_documents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "extraction.py",
+      "file_type": "code",
+      "norm_label": "list_available_mock_documents()",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L38"
+    },
+    {
+      "id": "backend_services_extraction_load_documents",
+      "label": "_load_documents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "extraction.py",
+      "file_type": "code",
+      "norm_label": "_load_documents()",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L23"
     },
     {
       "id": "backend_services_extraction_upload_document_to_blob",
@@ -597,7 +573,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "code",
       "norm_label": "upload_document_to_blob()",
       "source_file": "backend/services/extraction.py",
@@ -868,17 +844,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_services_routing",
-      "label": "routing.py",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "code",
-      "norm_label": "routing.py",
-      "source_file": "backend/services/routing.py",
-      "source_location": "L1"
-    },
-    {
       "id": "route",
       "label": "route",
       "_origin": "ast",
@@ -890,49 +855,15 @@
       "source_location": ""
     },
     {
-      "id": "project_explanation_1_flask_api_server_backend_app_py",
-      "label": "1. Flask API Server (`backend/app.py`)",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. flask api server (`backend/app.py`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L71"
-    },
-    {
-      "id": "backend_app_rationale_107",
-      "label": "Stage 4: department agent response (supports custom text or mock id).",
+      "id": "backend_app_rationale_121",
+      "label": "Stage 1: Speech-to-Text audio file transcription via Azure Speech SDK.",
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "rationale",
-      "norm_label": "stage 4: department agent response (supports custom text or mock id).",
+      "norm_label": "stage 1: speech-to-text audio file transcription via azure speech sdk.",
       "source_file": "backend/app.py",
-      "source_location": "L107"
-    },
-    {
-      "id": "backend_app_rationale_13",
-      "label": "Helper to resolve complaint from either an existing ID or manual custom user\u2026",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "rationale",
-      "norm_label": "helper to resolve complaint from either an existing id or manual custom user...",
-      "source_file": "backend/app.py",
-      "source_location": "L13"
-    },
-    {
-      "id": "backend_app_rationale_137",
-      "label": "Stage 5: filing (supports custom text or mock id).",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "rationale",
-      "norm_label": "stage 5: filing (supports custom text or mock id).",
-      "source_file": "backend/app.py",
-      "source_location": "L137"
+      "source_location": "L121"
     },
     {
       "id": "backend_app_rationale_162",
@@ -955,6 +886,61 @@
       "norm_label": "admin / officer desk: updates complaint status, resolution notes, and officer...",
       "source_file": "backend/app.py",
       "source_location": "L190"
+    },
+    {
+      "id": "backend_app_rationale_220",
+      "label": "Returns catalog of pre-loaded official government schemes.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "returns catalog of pre-loaded official government schemes.",
+      "source_file": "backend/app.py",
+      "source_location": "L220"
+    },
+    {
+      "id": "backend_app_rationale_226",
+      "label": "Returns full text of a pre-loaded scheme.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "returns full text of a pre-loaded scheme.",
+      "source_file": "backend/app.py",
+      "source_location": "L226"
+    },
+    {
+      "id": "backend_app_rationale_235",
+      "label": "Extracts text from uploaded policy document (PDF/Image/Text).",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "extracts text from uploaded policy document (pdf/image/text).",
+      "source_file": "backend/app.py",
+      "source_location": "L235"
+    },
+    {
+      "id": "backend_app_rationale_265",
+      "label": "Answers citizen doubt grounded in policy text with clause citations.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "answers citizen doubt grounded in policy text with clause citations.",
+      "source_file": "backend/app.py",
+      "source_location": "L265"
+    },
+    {
+      "id": "backend_app_rationale_282",
+      "label": "Translates policy answer into target Indian regional language.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "translates policy answer into target indian regional language.",
+      "source_file": "backend/app.py",
+      "source_location": "L282"
     },
     {
       "id": "backend_app_rationale_38",
@@ -990,48 +976,26 @@
       "source_location": "L67"
     },
     {
-      "id": "backend_app_rationale_94",
-      "label": "Stage 3: department routing (supports custom text or mock id).",
+      "id": "backend_app_rationale_77",
+      "label": "Stage 2: extract entities from uploaded document file using Azure Document\u2026",
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "rationale",
-      "norm_label": "stage 3: department routing (supports custom text or mock id).",
+      "norm_label": "stage 2: extract entities from uploaded document file using azure document...",
       "source_file": "backend/app.py",
-      "source_location": "L94"
+      "source_location": "L77"
     },
     {
-      "id": "backend_services_intake_rationale_153",
-      "label": "The English text routing/agents should reason over.",
+      "id": "backend_services_intake_rationale_59",
+      "label": "Translates text into any target language (e.g. hi, pa, bn, ta, te, mr, en).",
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "rationale",
-      "norm_label": "the english text routing/agents should reason over.",
+      "norm_label": "translates text into any target language (e.g. hi, pa, bn, ta, te, mr, en).",
       "source_file": "backend/services/intake.py",
-      "source_location": "L153"
-    },
-    {
-      "id": "backend_services_routing_rationale_1",
-      "label": "Stage 3: Department Routing This stage does NOT need Azure. It's a simple\u2026",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "rationale",
-      "norm_label": "stage 3: department routing this stage does not need azure. it's a simple...",
-      "source_file": "backend/services/routing.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_services_routing_rationale_28",
-      "label": "Returns the best-matching department id + name + score, based on keyword\u2026",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "rationale",
-      "norm_label": "returns the best-matching department id + name + score, based on keyword...",
-      "source_file": "backend/services/routing.py",
-      "source_location": "L28"
+      "source_location": "L59"
     },
     {
       "id": "agents_rules_graphify",
@@ -1090,176 +1054,143 @@
       "source_location": "L6"
     },
     {
-      "id": "backend_app_rationale_226",
-      "label": "Returns full text of a pre-loaded scheme.",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "get_policy_sample_endpoint",
-      "file_type": "rationale",
-      "norm_label": "returns full text of a pre-loaded scheme.",
-      "source_file": "backend/app.py",
-      "source_location": "L226"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_114",
-      "label": "Retrieves full text of a pre-loaded scheme.",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "get_policy_sample_endpoint",
-      "file_type": "rationale",
-      "norm_label": "retrieves full text of a pre-loaded scheme.",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L114"
-    },
-    {
-      "id": "backend_app_rationale_121",
-      "label": "Stage 1: Speech-to-Text audio file transcription via Azure Speech SDK.",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "transcribe_audio_endpoint",
-      "file_type": "rationale",
-      "norm_label": "stage 1: speech-to-text audio file transcription via azure speech sdk.",
-      "source_file": "backend/app.py",
-      "source_location": "L121"
-    },
-    {
-      "id": "backend_services_speech_rationale_19",
-      "label": "Transcribes uploaded audio bytes (WAV, MP3, M4A, OGG) to text. Uses Azure\u2026",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "transcribe_audio_endpoint",
-      "file_type": "rationale",
-      "norm_label": "transcribes uploaded audio bytes (wav, mp3, m4a, ogg) to text. uses azure...",
-      "source_file": "backend/services/speech.py",
-      "source_location": "L19"
-    },
-    {
-      "id": "backend_app_rationale_235",
-      "label": "Extracts text from uploaded policy document (PDF/Image/Text).",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "rationale",
-      "norm_label": "extracts text from uploaded policy document (pdf/image/text).",
-      "source_file": "backend/app.py",
-      "source_location": "L235"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_122",
-      "label": "Uploads an official government policy circular into Azure Blob Storage\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "rationale",
-      "norm_label": "uploads an official government policy circular into azure blob storage...",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L122"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_161",
-      "label": "Extracts policy text from uploaded files (PDF, image, text) using Azure\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "extract_policy_endpoint",
-      "file_type": "rationale",
-      "norm_label": "extracts policy text from uploaded files (pdf, image, text) using azure...",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L161"
-    },
-    {
-      "id": "backend_app_rationale_267",
-      "label": "Answers citizen doubt grounded in policy text with clause citations.",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "ask_policy_endpoint",
-      "file_type": "rationale",
-      "norm_label": "answers citizen doubt grounded in policy text with clause citations.",
-      "source_file": "backend/app.py",
-      "source_location": "L267"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_227",
-      "label": "Uses Azure OpenAI (gpt-5-mini) to clarify citizen doubts with grounded clause\u2026",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "ask_policy_endpoint",
-      "file_type": "rationale",
-      "norm_label": "uses azure openai (gpt-5-mini) to clarify citizen doubts with grounded clause...",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L227"
-    },
-    {
-      "id": "backend_app_rationale_220",
-      "label": "Returns catalog of pre-loaded official government schemes.",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "list_policy_samples_endpoint",
-      "file_type": "rationale",
-      "norm_label": "returns catalog of pre-loaded official government schemes.",
-      "source_file": "backend/app.py",
-      "source_location": "L220"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_101",
-      "label": "Returns catalog of pre-loaded government schemes.",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "list_policy_samples_endpoint",
-      "file_type": "rationale",
-      "norm_label": "returns catalog of pre-loaded government schemes.",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L101"
-    },
-    {
-      "id": "backend_services_agents",
-      "label": "agents.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
-      "file_type": "code",
-      "norm_label": "agents.py",
-      "source_file": "backend/services/agents.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_services_extraction",
-      "label": "extraction.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
-      "file_type": "code",
-      "norm_label": "extraction.py",
-      "source_file": "backend/services/extraction.py",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_services_policy_qa",
       "label": "policy_qa.py",
       "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
+      "community": 12,
+      "community_name": "policy_qa.py",
       "file_type": "code",
       "norm_label": "policy_qa.py",
       "source_file": "backend/services/policy_qa.py",
       "source_location": "L1"
     },
     {
+      "id": "backend_services_policy_qa_rationale_1",
+      "label": "Government Policy AI Clarifier & Doubts Resolution Service Supports: 1. Parsing\u2026",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "rationale",
+      "norm_label": "government policy ai clarifier & doubts resolution service supports: 1. parsing...",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_services_policy_qa_rationale_101",
+      "label": "Returns catalog of pre-loaded government schemes.",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "rationale",
+      "norm_label": "returns catalog of pre-loaded government schemes.",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L101"
+    },
+    {
+      "id": "backend_services_policy_qa_rationale_114",
+      "label": "Retrieves full text of a pre-loaded scheme.",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "rationale",
+      "norm_label": "retrieves full text of a pre-loaded scheme.",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L114"
+    },
+    {
+      "id": "backend_services_policy_qa_rationale_119",
+      "label": "Extracts policy text from uploaded files (PDF, image, text) using Azure\u2026",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "rationale",
+      "norm_label": "extracts policy text from uploaded files (pdf, image, text) using azure...",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L119"
+    },
+    {
+      "id": "backend_services_policy_qa_rationale_180",
+      "label": "Uses Azure OpenAI (gpt-5-mini) to clarify citizen doubts with grounded clause\u2026",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "file_type": "rationale",
+      "norm_label": "uses azure openai (gpt-5-mini) to clarify citizen doubts with grounded clause...",
+      "source_file": "backend/services/policy_qa.py",
+      "source_location": "L180"
+    },
+    {
       "id": "backend_services_speech",
       "label": "speech.py",
       "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
+      "community": 13,
+      "community_name": "speech.py",
       "file_type": "code",
       "norm_label": "speech.py",
       "source_file": "backend/services/speech.py",
       "source_location": "L1"
     },
     {
+      "id": "backend_services_speech_rationale_1",
+      "label": "Stage 1 Helper: Audio & Voice Transcription Service Supports: 1. Azure\u2026",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "speech.py",
+      "file_type": "rationale",
+      "norm_label": "stage 1 helper: audio & voice transcription service supports: 1. azure...",
+      "source_file": "backend/services/speech.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_services_speech_rationale_19",
+      "label": "Transcribes uploaded audio bytes (WAV, MP3, M4A, OGG) to text. Uses Azure\u2026",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "speech.py",
+      "file_type": "rationale",
+      "norm_label": "transcribes uploaded audio bytes (wav, mp3, m4a, ogg) to text. uses azure...",
+      "source_file": "backend/services/speech.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "backend_services_agents",
+      "label": "agents.py",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "agents.py",
+      "file_type": "code",
+      "norm_label": "agents.py",
+      "source_file": "backend/services/agents.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_services_routing",
+      "label": "routing.py",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "agents.py",
+      "file_type": "code",
+      "norm_label": "routing.py",
+      "source_file": "backend/services/routing.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_rationale_107",
+      "label": "Stage 4: department agent response (supports custom text or mock id).",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "agents.py",
+      "file_type": "rationale",
+      "norm_label": "stage 4: department agent response (supports custom text or mock id).",
+      "source_file": "backend/app.py",
+      "source_location": "L107"
+    },
+    {
       "id": "backend_services_agents_rationale_1",
       "label": "Stage 4: Department Agents This module uses Azure AI Search for grounded\u2026",
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "rationale",
       "norm_label": "stage 4: department agents this module uses azure ai search for grounded...",
       "source_file": "backend/services/agents.py",
@@ -1270,7 +1201,7 @@
       "label": "Retrieve grounded policy snippets from Azure AI Search.",
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "rationale",
       "norm_label": "retrieve grounded policy snippets from azure ai search.",
       "source_file": "backend/services/agents.py",
@@ -1281,55 +1212,33 @@
       "label": "Executes grounded department agent response. Queries Azure AI Search + Azure\u2026",
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "rationale",
       "norm_label": "executes grounded department agent response. queries azure ai search + azure...",
       "source_file": "backend/services/agents.py",
       "source_location": "L84"
     },
     {
-      "id": "backend_services_extraction_rationale_1",
-      "label": "Stage 2: Document Extraction & Content Understanding Supports: 1. Live Azure\u2026",
+      "id": "backend_services_routing_rationale_1",
+      "label": "Stage 3: Department Routing This stage does NOT need Azure. It's a simple\u2026",
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "rationale",
-      "norm_label": "stage 2: document extraction & content understanding supports: 1. live azure...",
-      "source_file": "backend/services/extraction.py",
+      "norm_label": "stage 3: department routing this stage does not need azure. it's a simple...",
+      "source_file": "backend/services/routing.py",
       "source_location": "L1"
     },
     {
-      "id": "backend_services_extraction_rationale_29",
-      "label": "Fallback / Mock document loader.",
+      "id": "backend_services_routing_rationale_28",
+      "label": "Returns the best-matching department id + name + score, based on keyword\u2026",
       "_origin": "ast",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "file_type": "rationale",
-      "norm_label": "fallback / mock document loader.",
-      "source_file": "backend/services/extraction.py",
-      "source_location": "L29"
-    },
-    {
-      "id": "backend_services_policy_qa_rationale_1",
-      "label": "Government Policy AI Clarifier & Doubts Resolution Service Supports: 1. Parsing\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
-      "file_type": "rationale",
-      "norm_label": "government policy ai clarifier & doubts resolution service supports: 1. parsing...",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_services_speech_rationale_1",
-      "label": "Stage 1 Helper: Audio & Voice Transcription Service Supports: 1. Azure\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "extraction.py",
-      "file_type": "rationale",
-      "norm_label": "stage 1 helper: audio & voice transcription service supports: 1. azure...",
-      "source_file": "backend/services/speech.py",
-      "source_location": "L1"
+      "norm_label": "returns the best-matching department id + name + score, based on keyword...",
+      "source_file": "backend/services/routing.py",
+      "source_location": "L28"
     },
     {
       "id": "backend_services_filing",
@@ -1367,25 +1276,36 @@
     },
     {
       "id": "backend_services_filing_rationale_113",
-      "label": "Uploads an official citizen grievance dossier/report as formatted JSON into\u2026",
+      "label": "Files a citizen complaint into Azure Table Storage (and caches in-memory).",
       "_origin": "ast",
       "community": 3,
       "community_name": "filing.py",
       "file_type": "rationale",
-      "norm_label": "uploads an official citizen grievance dossier/report as formatted json into...",
+      "norm_label": "files a citizen complaint into azure table storage (and caches in-memory).",
       "source_file": "backend/services/filing.py",
       "source_location": "L113"
     },
     {
-      "id": "backend_services_filing_rationale_171",
-      "label": "Files a citizen complaint into Azure Table Storage and stores official dossier\u2026",
+      "id": "backend_services_filing_rationale_167",
+      "label": "Fetches complaint status from Azure Table Storage, falling back to in-memory\u2026",
       "_origin": "ast",
       "community": 3,
       "community_name": "filing.py",
       "file_type": "rationale",
-      "norm_label": "files a citizen complaint into azure table storage and stores official dossier...",
+      "norm_label": "fetches complaint status from azure table storage, falling back to in-memory...",
       "source_file": "backend/services/filing.py",
-      "source_location": "L171"
+      "source_location": "L167"
+    },
+    {
+      "id": "backend_services_filing_rationale_206",
+      "label": "Retrieves all complaints from Azure Table Storage or in-memory store for the\u2026",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "filing.py",
+      "file_type": "rationale",
+      "norm_label": "retrieves all complaints from azure table storage or in-memory store for the...",
+      "source_file": "backend/services/filing.py",
+      "source_location": "L206"
     },
     {
       "id": "backend_services_filing_rationale_22",
@@ -1399,29 +1319,7 @@
       "source_location": "L22"
     },
     {
-      "id": "backend_services_filing_rationale_231",
-      "label": "Fetches complaint status from Azure Table Storage, falling back to in-memory\u2026",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "filing.py",
-      "file_type": "rationale",
-      "norm_label": "fetches complaint status from azure table storage, falling back to in-memory...",
-      "source_file": "backend/services/filing.py",
-      "source_location": "L231"
-    },
-    {
-      "id": "backend_services_filing_rationale_271",
-      "label": "Retrieves all complaints from Azure Table Storage or in-memory store for the\u2026",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "filing.py",
-      "file_type": "rationale",
-      "norm_label": "retrieves all complaints from azure table storage or in-memory store for the...",
-      "source_file": "backend/services/filing.py",
-      "source_location": "L271"
-    },
-    {
-      "id": "backend_services_filing_rationale_319",
+      "id": "backend_services_filing_rationale_253",
       "label": "Updates complaint status, officer notes, and audit timeline.",
       "_origin": "ast",
       "community": 3,
@@ -1429,7 +1327,7 @@
       "file_type": "rationale",
       "norm_label": "updates complaint status, officer notes, and audit timeline.",
       "source_file": "backend/services/filing.py",
-      "source_location": "L319"
+      "source_location": "L253"
     },
     {
       "id": "backend_services_filing_rationale_82",
@@ -1454,15 +1352,121 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_rationale_284",
-      "label": "Translates policy answer into target Indian regional language.",
+      "id": "project_explanation_1_flask_api_server_backend_app_py",
+      "label": "1. Flask API Server (`backend/app.py`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. flask api server (`backend/app.py`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "project_explanation_2_stage_1_multilingual_intake_audio_transcription_backend_services_intake_py_speech_py",
+      "label": "2. Stage 1: Multilingual Intake & Audio Transcription (`backend/services/intake.py` & `speech.py`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. stage 1: multilingual intake & audio transcription (`backend/services/intake.py` & `speech.py`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "project_explanation_4_stage_3_department_routing_classifier_backend_services_routing_py",
+      "label": "4. Stage 3: Department Routing Classifier (`backend/services/routing.py`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. stage 3: department routing classifier (`backend/services/routing.py`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "project_explanation_5_stage_4_grounded_specialist_agents_backend_services_agents_py",
+      "label": "5. Stage 4: Grounded Specialist Agents (`backend/services/agents.py`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. stage 4: grounded specialist agents (`backend/services/agents.py`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L109"
+    },
+    {
+      "id": "project_explanation_7_stage_6_government_policy_clarifier_multilingual_q_a_backend_services_policy_qa_py_intake_py",
+      "label": "7. Stage 6: Government Policy Clarifier & Multilingual Q&A (`backend/services/policy_qa.py` & `intake.py`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. stage 6: government policy clarifier & multilingual q&a (`backend/services/policy_qa.py` & `intake.py`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "project_explanation_8_frontend_user_interface_frontend_src_app_jsx_index_css",
+      "label": "8. Frontend User Interface (`frontend/src/App.jsx` & `index.css`)",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "8. frontend user interface (`frontend/src/app.jsx` & `index.css`)",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "project_explanation_detailed_component_walkthrough",
+      "label": "\ud83d\udd0d Detailed Component Walkthrough",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udd0d detailed component walkthrough",
+      "source_file": "PROJECT_EXPLANATION.md",
+      "source_location": "L69"
+    },
+    {
+      "id": "backend_app_rationale_13",
+      "label": "Helper to resolve complaint from either an existing ID or manual custom user\u2026",
       "_origin": "ast",
       "community": 4,
       "community_name": "intake.py",
       "file_type": "rationale",
-      "norm_label": "translates policy answer into target indian regional language.",
+      "norm_label": "helper to resolve complaint from either an existing id or manual custom user...",
       "source_file": "backend/app.py",
-      "source_location": "L284"
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_app_rationale_137",
+      "label": "Stage 5: filing (supports custom text or mock id).",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "rationale",
+      "norm_label": "stage 5: filing (supports custom text or mock id).",
+      "source_file": "backend/app.py",
+      "source_location": "L137"
+    },
+    {
+      "id": "backend_app_rationale_94",
+      "label": "Stage 3: department routing (supports custom text or mock id).",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "rationale",
+      "norm_label": "stage 3: department routing (supports custom text or mock id).",
+      "source_file": "backend/app.py",
+      "source_location": "L94"
     },
     {
       "id": "backend_services_intake_rationale_1",
@@ -1476,6 +1480,17 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_services_intake_rationale_153",
+      "label": "The English text routing/agents should reason over.",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "intake.py",
+      "file_type": "rationale",
+      "norm_label": "the english text routing/agents should reason over.",
+      "source_file": "backend/services/intake.py",
+      "source_location": "L153"
+    },
+    {
       "id": "backend_services_intake_rationale_26",
       "label": "Uses Azure AI Translator to detect language and translate to English.",
       "_origin": "ast",
@@ -1487,22 +1502,22 @@
       "source_location": "L26"
     },
     {
-      "id": "backend_services_intake_rationale_59",
-      "label": "Translates text into any target language (e.g. hi, pa, bn, ta, te, mr, en).",
+      "id": "backend_services_extraction",
+      "label": "extraction.py",
       "_origin": "ast",
-      "community": 4,
-      "community_name": "intake.py",
-      "file_type": "rationale",
-      "norm_label": "translates text into any target language (e.g. hi, pa, bn, ta, te, mr, en).",
-      "source_file": "backend/services/intake.py",
-      "source_location": "L59"
+      "community": 5,
+      "community_name": "extraction.py",
+      "file_type": "code",
+      "norm_label": "extraction.py",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L1"
     },
     {
       "id": "project_explanation_3_stage_2_document_intelligence_backend_services_extraction_py",
       "label": "3. Stage 2: Document Intelligence (`backend/services/extraction.py`)",
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. stage 2: document intelligence (`backend/services/extraction.py`)",
@@ -1510,33 +1525,44 @@
       "source_location": "L93"
     },
     {
-      "id": "backend_app_rationale_77",
-      "label": "Stage 2: extract entities from uploaded document file using Azure Document\u2026",
+      "id": "backend_services_extraction_rationale_1",
+      "label": "Stage 2: Document Extraction & Content Understanding Supports: 1. Live Azure\u2026",
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "rationale",
-      "norm_label": "stage 2: extract entities from uploaded document file using azure document...",
-      "source_file": "backend/app.py",
-      "source_location": "L77"
+      "norm_label": "stage 2: document extraction & content understanding supports: 1. live azure...",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L1"
     },
     {
       "id": "backend_services_extraction_rationale_142",
       "label": "Uses Azure OpenAI (gpt-5-mini) to extract all structured key-value entities\u2026",
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "rationale",
       "norm_label": "uses azure openai (gpt-5-mini) to extract all structured key-value entities...",
       "source_file": "backend/services/extraction.py",
       "source_location": "L142"
     },
     {
+      "id": "backend_services_extraction_rationale_29",
+      "label": "Fallback / Mock document loader.",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "extraction.py",
+      "file_type": "rationale",
+      "norm_label": "fallback / mock document loader.",
+      "source_file": "backend/services/extraction.py",
+      "source_location": "L29"
+    },
+    {
       "id": "backend_services_extraction_rationale_43",
       "label": "Uploads an uploaded citizen document to Azure Blob Storage ('citizendocuments'\u2026",
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "rationale",
       "norm_label": "uploads an uploaded citizen document to azure blob storage ('citizendocuments'...",
       "source_file": "backend/services/extraction.py",
@@ -1547,7 +1573,7 @@
       "label": "Analyzes an uploaded citizen document (PDF, PNG, JPG) using Azure Document\u2026",
       "_origin": "ast",
       "community": 5,
-      "community_name": "extract_document_from_bytes",
+      "community_name": "extraction.py",
       "file_type": "rationale",
       "norm_label": "analyzes an uploaded citizen document (pdf, png, jpg) using azure document...",
       "source_file": "backend/services/extraction.py",
@@ -1558,7 +1584,7 @@
       "label": "PROJECT_EXPLANATION.md",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "project_explanation.md",
@@ -1566,71 +1592,11 @@
       "source_location": "L1"
     },
     {
-      "id": "project_explanation_2_stage_1_multilingual_intake_audio_transcription_backend_services_intake_py_speech_py",
-      "label": "2. Stage 1: Multilingual Intake & Audio Transcription (`backend/services/intake.py` & `speech.py`)",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2. stage 1: multilingual intake & audio transcription (`backend/services/intake.py` & `speech.py`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L88"
-    },
-    {
-      "id": "project_explanation_4_stage_3_department_routing_classifier_backend_services_routing_py",
-      "label": "4. Stage 3: Department Routing Classifier (`backend/services/routing.py`)",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. stage 3: department routing classifier (`backend/services/routing.py`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L103"
-    },
-    {
-      "id": "project_explanation_5_stage_4_grounded_specialist_agents_backend_services_agents_py",
-      "label": "5. Stage 4: Grounded Specialist Agents (`backend/services/agents.py`)",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "5. stage 4: grounded specialist agents (`backend/services/agents.py`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L109"
-    },
-    {
-      "id": "project_explanation_7_stage_6_government_policy_clarifier_multilingual_q_a_backend_services_policy_qa_py_intake_py",
-      "label": "7. Stage 6: Government Policy Clarifier & Multilingual Q&A (`backend/services/policy_qa.py` & `intake.py`)",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "7. stage 6: government policy clarifier & multilingual q&a (`backend/services/policy_qa.py` & `intake.py`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L122"
-    },
-    {
-      "id": "project_explanation_8_frontend_user_interface_frontend_src_app_jsx_index_css",
-      "label": "8. Frontend User Interface (`frontend/src/App.jsx` & `index.css`)",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "8. frontend user interface (`frontend/src/app.jsx` & `index.css`)",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L133"
-    },
-    {
       "id": "project_explanation_adding_a_new_municipal_department_e_g_sanitation_roads",
       "label": "Adding a New Municipal Department (e.g., Sanitation / Roads):",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "adding a new municipal department (e.g., sanitation / roads):",
@@ -1642,7 +1608,7 @@
       "label": "\ud83d\uddfa\ufe0f Codebase Knowledge Graph (Graphify)",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83d\uddfa\ufe0f codebase knowledge graph (graphify)",
@@ -1650,23 +1616,11 @@
       "source_location": "L191"
     },
     {
-      "id": "project_explanation_detailed_component_walkthrough",
-      "label": "\ud83d\udd0d Detailed Component Walkthrough",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "\ud83d\udd0d detailed component walkthrough",
-      "source_file": "PROJECT_EXPLANATION.md",
-      "source_location": "L69"
-    },
-    {
       "id": "project_explanation_executive_summary",
       "label": "\ud83d\udcd6 Executive Summary",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83d\udcd6 executive summary",
@@ -1678,7 +1632,7 @@
       "label": "\ud83d\udee0\ufe0f How to Extend JanConnect",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83d\udee0\ufe0f how to extend janconnect",
@@ -1690,7 +1644,7 @@
       "label": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "janconnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u091f) \u2014 comprehensive project architecture & technical guide",
@@ -1702,7 +1656,7 @@
       "label": "\ud83d\udd12 Security & Environment Variables",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83d\udd12 security & environment variables",
@@ -1714,7 +1668,7 @@
       "label": "\ud83c\udfdb\ufe0f System Architecture Diagram",
       "_origin": "ast",
       "community": 6,
-      "community_name": "\ud83d\udd0d Detailed Component Walkthrough",
+      "community_name": "JanConnect (\u091c\u0928 \u0915\u0928\u0947\u0915\u094d\u091f) \u2014 Comprehensive Project Architecture & Technical Guide",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83c\udfdb\ufe0f system architecture diagram",
@@ -2050,11 +2004,35 @@
       "type": "external"
     },
     {
+      "id": "io",
+      "label": "io",
+      "_origin": "semantic",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "io",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "re",
+      "label": "re",
+      "_origin": "semantic",
+      "community": 12,
+      "community_name": "policy_qa.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "re",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "dotenv",
       "label": "dotenv",
       "_origin": "semantic",
-      "community": 2,
-      "community_name": "extraction.py",
+      "community": 13,
+      "community_name": "speech.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "dotenv",
@@ -2062,14 +2040,14 @@
       "type": "external"
     },
     {
-      "id": "io",
-      "label": "io",
+      "id": "tempfile",
+      "label": "tempfile",
       "_origin": "semantic",
-      "community": 2,
-      "community_name": "extraction.py",
+      "community": 13,
+      "community_name": "speech.py",
       "external": true,
       "file_type": "concept",
-      "norm_label": "io",
+      "norm_label": "tempfile",
       "source_file": "",
       "type": "external"
     },
@@ -2078,7 +2056,7 @@
       "label": "json",
       "_origin": "semantic",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "json",
@@ -2090,34 +2068,10 @@
       "label": "os",
       "_origin": "semantic",
       "community": 2,
-      "community_name": "extraction.py",
+      "community_name": "agents.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "os",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "re",
-      "label": "re",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "extraction.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "re",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "tempfile",
-      "label": "tempfile",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "extraction.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "tempfile",
       "source_file": "",
       "type": "external"
     },
@@ -2192,7 +2146,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app.py",
-      "source_location": "L278",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -2229,18 +2183,6 @@
       "context": "call",
       "source_file": "backend/app.py",
       "source_location": "L242",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_extract_policy_endpoint",
-      "target": "backend_services_policy_qa_upload_policy_to_blob",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "backend/app.py",
-      "source_location": "L253",
       "weight": 1.0
     },
     {
@@ -2504,7 +2446,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app.py",
-      "source_location": "L292",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
@@ -2581,18 +2523,6 @@
     },
     {
       "source": "backend_services_filing_file_complaint",
-      "target": "backend_services_filing_upload_grievance_report_to_blob",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "backend/services/filing.py",
-      "source_location": "L201",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing_file_complaint",
       "target": "backend_services_filing_get_table_client",
       "relation": "calls",
       "_origin": "ast",
@@ -2600,7 +2530,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/services/filing.py",
-      "source_location": "L209",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -2612,7 +2542,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/services/filing.py",
-      "source_location": "L232",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -2624,19 +2554,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/services/filing.py",
-      "source_location": "L272",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing_update_complaint_status",
-      "target": "backend_services_filing_upload_grievance_report_to_blob",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "backend/services/filing.py",
-      "source_location": "L354",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -2648,7 +2566,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/services/filing.py",
-      "source_location": "L359",
+      "source_location": "L288",
       "weight": 1.0
     },
     {
@@ -2673,18 +2591,6 @@
       "context": "call",
       "source_file": "backend/services/intake.py",
       "source_location": "L149",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_policy_qa_extract_policy_content",
-      "target": "backend_services_policy_qa_upload_policy_to_blob",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -2732,7 +2638,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app.py",
-      "source_location": "L265",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -2912,7 +2818,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app.py",
-      "source_location": "L282",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -3081,18 +2987,6 @@
       "context": "import",
       "source_file": "backend/services/policy_qa.py",
       "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_policy_qa",
-      "target": "uuid",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -3832,7 +3726,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app.py",
-      "source_location": "L266",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -3843,7 +3737,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app.py",
-      "source_location": "L283",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -4024,7 +3918,7 @@
     },
     {
       "source": "backend_services_filing",
-      "target": "backend_services_filing_upload_grievance_report_to_blob",
+      "target": "backend_services_filing_file_complaint",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -4035,13 +3929,24 @@
     },
     {
       "source": "backend_services_filing",
-      "target": "backend_services_filing_file_complaint",
+      "target": "backend_services_filing_get_status",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/filing.py",
-      "source_location": "L170",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_services_filing",
+      "target": "backend_services_filing_list_all_complaints",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/services/filing.py",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -4057,35 +3962,13 @@
     },
     {
       "source": "backend_services_filing",
-      "target": "backend_services_filing_get_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/filing.py",
-      "source_location": "L230",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing",
-      "target": "backend_services_filing_list_all_complaints",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/filing.py",
-      "source_location": "L270",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing",
       "target": "backend_services_filing_update_complaint_status",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/filing.py",
-      "source_location": "L318",
+      "source_location": "L252",
       "weight": 1.0
     },
     {
@@ -4189,24 +4072,13 @@
     },
     {
       "source": "backend_services_policy_qa",
-      "target": "backend_services_policy_qa_upload_policy_to_blob",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L121",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_policy_qa",
       "target": "backend_services_policy_qa_extract_policy_content",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/policy_qa.py",
-      "source_location": "L160",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -4217,7 +4089,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/policy_qa.py",
-      "source_location": "L226",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -4760,25 +4632,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_rationale_267",
+      "source": "backend_app_rationale_265",
       "target": "backend_app_ask_policy_endpoint",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app.py",
-      "source_location": "L267",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
-      "source": "backend_app_rationale_284",
+      "source": "backend_app_rationale_282",
       "target": "backend_app_translate_policy_endpoint",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app.py",
-      "source_location": "L284",
+      "source_location": "L282",
       "weight": 1.0
     },
     {
@@ -4937,7 +4809,7 @@
     },
     {
       "source": "backend_services_filing_rationale_113",
-      "target": "backend_services_filing_upload_grievance_report_to_blob",
+      "target": "backend_services_filing_file_complaint",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -4947,14 +4819,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_services_filing_rationale_171",
-      "target": "backend_services_filing_file_complaint",
+      "source": "backend_services_filing_rationale_167",
+      "target": "backend_services_filing_get_status",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/filing.py",
-      "source_location": "L171",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_services_filing_rationale_206",
+      "target": "backend_services_filing_list_all_complaints",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/services/filing.py",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -4969,36 +4852,14 @@
       "weight": 1.0
     },
     {
-      "source": "backend_services_filing_rationale_231",
-      "target": "backend_services_filing_get_status",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/filing.py",
-      "source_location": "L231",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing_rationale_271",
-      "target": "backend_services_filing_list_all_complaints",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/filing.py",
-      "source_location": "L271",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_filing_rationale_319",
+      "source": "backend_services_filing_rationale_253",
       "target": "backend_services_filing_update_complaint_status",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/filing.py",
-      "source_location": "L319",
+      "source_location": "L253",
       "weight": 1.0
     },
     {
@@ -5090,36 +4951,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_services_policy_qa_rationale_122",
-      "target": "backend_services_policy_qa_upload_policy_to_blob",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/services/policy_qa.py",
-      "source_location": "L122",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_services_policy_qa_rationale_161",
+      "source": "backend_services_policy_qa_rationale_119",
       "target": "backend_services_policy_qa_extract_policy_content",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/policy_qa.py",
-      "source_location": "L161",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
-      "source": "backend_services_policy_qa_rationale_227",
+      "source": "backend_services_policy_qa_rationale_180",
       "target": "backend_services_policy_qa_answer_policy_doubt",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/services/policy_qa.py",
-      "source_location": "L227",
+      "source_location": "L180",
       "weight": 1.0
     },
     {

@@ -1,21 +1,26 @@
 """
-Stage 4: Chandigarh Grounded Specialist Agents
+Stage 4: Department Agents
 
 This module uses Azure AI Search for grounded departmental policy retrieval
-and Azure OpenAI (gpt-5-mini via Foundry) to synthesize verified citizen guidance
-tailored to the Union Territory of Chandigarh (MCC & CPDL).
+and Azure OpenAI (via Foundry) to synthesize verified citizen guidance.
+If Azure services are unreachable or credentials are not configured, it
+gracefully falls back to the local policy definitions.
 """
 
 import json
 import os
 from dotenv import load_dotenv
 
-ENV_PATH = os.path.join(os.path.dirname(__file__), "..", ".env")
-load_dotenv(ENV_PATH)
+load_dotenv()
 
 POLICY_PATH = os.path.join(
     os.path.dirname(__file__), "..", "mock_data", "department_policies.json"
 )
+
+ORCHESTRATOR_PROMPT = """You are the intake orchestrator for a citizen
+grievance system. Given a citizen's complaint, you determine which
+department agent should handle it and delegate the task to that agent via
+A2A. You never answer policy questions yourself — you only route."""
 
 DEPARTMENT_AGENT_PROMPT = """You are an official municipal specialist officer representing the Chandigarh Civic Administration (Municipal Corporation Chandigarh & Chandigarh Power Distribution Limited).
 You assist citizens residing in the Union Territory of Chandigarh (Sectors 1-63, Manimajra/Sector 13, Dhanas, Maloya, Industrial Area).
@@ -30,24 +35,24 @@ Mandatory Guidelines:
 4. Maintain a polite, efficient, citizen-first tone. Keep the answer concise (3-4 bullet points or short paragraphs).
 """
 
+TOOLS = [
+    {
+        "name": "fetch_policy",
+        "description": "Retrieve this department's grounding policy documents from Azure AI Search.",
+    },
+    {
+        "name": "file_complaint",
+        "description": "File a structured complaint against this department via the MCP tool server, returning a tracking id.",
+    },
+    {
+        "name": "check_status",
+        "description": "Look up the status of a previously filed complaint by tracking id.",
+    },
+]
+
 
 def _load_departments() -> dict:
-    """Loads department metadata dynamically from Azure Table Storage."""
-    try:
-        from services import storage
-        depts = storage.get_departments()
-        if depts:
-            return {
-                d["id"]: {
-                    "department_name": d["name"],
-                    "policy_snippets": d.get("policies", [])
-                }
-                for d in depts
-            }
-    except Exception as e:
-        print(f"[Agents Storage Warning] {e}")
-
-    with open(POLICY_PATH, "r", encoding="utf-8") as f:
+    with open(POLICY_PATH, "r") as f:
         return json.load(f)
 
 
@@ -87,9 +92,7 @@ def mock_department_response(department_id: str, complaint_text: str) -> dict:
     departments = _load_departments()
     dept = departments.get(department_id)
     dept_name = dept["department_name"] if dept else "Municipal Corporation Chandigarh"
-    fallback_snippets = dept["policy_snippets"] if dept else [
-        "Standard Chandigarh municipal grievance resolution timeline is 14 working days. Call MCC ICCC 0172-2787200."
-    ]
+    fallback_snippets = dept["policy_snippets"] if dept else ["Standard Chandigarh grievance escalation: 14 working days. Call MCC ICCC 0172-2787200."]
 
     # Step 1: Grounding via Azure AI Search
     retrieved_snippets = _search_grounding_policies(complaint_text, dept_name)
@@ -124,10 +127,9 @@ def mock_department_response(department_id: str, complaint_text: str) -> dict:
                     {"role": "system", "content": DEPARTMENT_AGENT_PROMPT},
                     {"role": "user", "content": prompt},
                 ],
-                max_completion_tokens=1500,
+                max_completion_tokens=2500,
             )
             answer = resp.choices[0].message.content.strip()
-
             if answer:
                 return {
                     "department_name": dept_name,
@@ -138,7 +140,7 @@ def mock_department_response(department_id: str, complaint_text: str) -> dict:
         except Exception as e:
             print(f"[Azure OpenAI Agent Warning] {e}")
 
-    # Fallback to local policy answer
+    # Fallback to local mock policy answer
     return {
         "department_name": dept_name,
         "answer": fallback_snippets[0],

@@ -10,9 +10,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
-ENV_PATH = os.path.join(os.path.dirname(__file__), "..", ".env")
-load_dotenv(ENV_PATH)
-
+load_dotenv()
 
 MOCK_PATH = os.path.join(
     os.path.dirname(__file__), "..", "mock_data", "complaints_sample.json"
@@ -57,6 +55,89 @@ def translate_text(text: str) -> dict:
     return {"language": "en", "translated_text": None}
 
 
+def translate_to_language(text: str, target_lang: str = "hi") -> dict:
+    """Translates text into any target language (e.g. hi, pa, bn, ta, te, mr, en)."""
+    if not text or not text.strip():
+        return {"target_language": target_lang, "translated_text": "", "source": "empty"}
+
+    key = os.getenv("AZURE_TRANSLATOR_KEY")
+    region = os.getenv("AZURE_TRANSLATOR_REGION", "eastus2")
+    endpoint = os.getenv("AZURE_TRANSLATOR_ENDPOINT", "https://api.cognitive.microsofttranslator.com/")
+
+    if key and "<your" not in key:
+        path = f"/translate?api-version=3.0&to={target_lang}"
+        headers = {
+            "Ocp-Apim-Subscription-Key": key,
+            "Ocp-Apim-Subscription-Region": region,
+            "Content-type": "application/json",
+        }
+        body = [{"text": text}]
+        try:
+            response = requests.post(endpoint.rstrip("/") + path, headers=headers, json=body, timeout=8)
+            if response.status_code == 200:
+                res = response.json()
+                translated = res[0]["translations"][0]["text"]
+                return {
+                    "target_language": target_lang,
+                    "translated_text": translated,
+                    "source": "Azure AI Translator"
+                }
+        except Exception as e:
+            print(f"[Azure Translator Target Error] {e}")
+
+    # Fallback to Azure OpenAI if configured
+    openai_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+    openai_key = os.getenv("AZURE_OPENAI_KEY")
+    openai_deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5-mini")
+
+    lang_names = {
+        "hi": "Hindi (हिन्दी)",
+        "pa": "Punjabi (ਪੰਜਾਬੀ)",
+        "bn": "Bengali (বাংলা)",
+        "ta": "Tamil (தமிழ்)",
+        "te": "Telugu (తెలుగు)",
+        "mr": "Marathi (मराठी)",
+        "gu": "Gujarati (ગુજરાતી)",
+        "en": "English",
+    }
+    lang_name = lang_names.get(target_lang, target_lang)
+
+    if openai_endpoint and openai_key and "<your" not in openai_endpoint:
+        try:
+            from openai import AzureOpenAI
+            client = AzureOpenAI(
+                azure_endpoint=openai_endpoint,
+                api_key=openai_key,
+                api_version="2024-12-01-preview",
+            )
+            prompt = (
+                f"Translate the following civic/policy text accurately into natural {lang_name}. "
+                f"Maintain all numbers, dates, and official names verbatim.\n\n"
+                f"Text:\n\"\"\"\n{text}\n\"\"\"\n\n"
+                f"Return ONLY the translated text without conversational preamble."
+            )
+            resp = client.chat.completions.create(
+                model=openai_deployment,
+                messages=[{"role": "user", "content": prompt}],
+                max_completion_tokens=1200,
+            )
+            content = resp.choices[0].message.content.strip()
+            return {
+                "target_language": target_lang,
+                "translated_text": content,
+                "source": "Azure OpenAI (Foundry)"
+            }
+        except Exception as e:
+            print(f"[OpenAI Translation Warning] {e}")
+
+    return {
+        "target_language": target_lang,
+        "translated_text": text,
+        "source": "Local Fallback"
+    }
+
+
+
 def get_complaint(complaint_id: str) -> dict:
     for c in _load_complaints():
         if c["id"] == complaint_id:
@@ -71,71 +152,3 @@ def list_complaints() -> list:
 def working_text(complaint: dict) -> str:
     """The English text routing/agents should reason over."""
     return complaint.get("translated_text") or complaint["raw_text"]
-
-
-def transcribe_audio(audio_bytes: bytes, filename: str = "audio.wav") -> dict:
-    """
-    Uses Azure Cognitive Services Speech SDK to transcribe citizen voice recordings
-    (supports Hindi / Indian English), and auto-translates for downstream routing.
-    """
-    speech_key = os.getenv("AZURE_SPEECH_KEY")
-    speech_region = os.getenv("AZURE_SPEECH_REGION", "eastus2")
-
-    if not speech_key or "<your" in speech_key:
-        return {
-            "error": "Azure Speech key not configured",
-            "transcribed_text": "",
-            "_source": "local_fallback"
-        }
-
-    try:
-        import tempfile
-        import azure.cognitiveservices.speech as speechsdk
-
-        suffix = os.path.splitext(filename)[1] or ".wav"
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            tmp.write(audio_bytes)
-            tmp_path = tmp.name
-
-        try:
-            speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=speech_region)
-            speech_config.speech_recognition_language = "hi-IN"
-            audio_config = speechsdk.audio.AudioConfig(filename=tmp_path)
-            recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
-
-            result = recognizer.recognize_once_async().get()
-            if result.reason == speechsdk.ResultReason.RecognizedSpeech:
-                text = result.text.strip()
-                trans_res = translate_text(text)
-                return {
-                    "transcribed_text": text,
-                    "language": trans_res.get("language", "hi"),
-                    "translated_text": trans_res.get("translated_text"),
-                    "_source": "Azure Cognitive Services Speech (hi-IN)"
-                }
-            elif result.reason == speechsdk.ResultReason.NoMatch:
-                return {
-                    "error": "No speech detected in audio file",
-                    "transcribed_text": "",
-                    "_source": "Azure Speech"
-                }
-            else:
-                return {
-                    "error": f"Recognition cancelled or unformatted audio",
-                    "transcribed_text": "",
-                    "_source": "Azure Speech"
-                }
-        finally:
-            if os.path.exists(tmp_path):
-                try:
-                    os.remove(tmp_path)
-                except Exception:
-                    pass
-    except Exception as e:
-        print(f"[Azure Speech Warning] {e}")
-        return {
-            "error": str(e),
-            "transcribed_text": "",
-            "_source": "Azure Speech Exception"
-        }
-

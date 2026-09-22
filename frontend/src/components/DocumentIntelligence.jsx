@@ -135,18 +135,23 @@ export default function DocumentIntelligence({
             ></textarea>
           </div>
 
-          <div className="quick-chips-wrapper" style={{ marginBottom: "1rem" }}>
-            <span className="quick-chip-label">Load Chandigarh Template:</span>
-            {docTemplates.map((tpl, i) => (
-              <button
-                key={i}
-                type="button"
-                className="quick-chip"
-                onClick={() => setManualDocText(tpl.text)}
-              >
-                {tpl.label}
-              </button>
-            ))}
+          <div className="quick-chips-wrapper" style={{ marginBottom: "1.25rem" }}>
+            <div className="quick-chips-header">
+              <span>📄</span>
+              <span>Load Official Chandigarh Sample Template:</span>
+            </div>
+            <div className="quick-chips-list">
+              {docTemplates.map((tpl, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="quick-chip"
+                  onClick={() => setManualDocText(tpl.text)}
+                >
+                  {tpl.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button

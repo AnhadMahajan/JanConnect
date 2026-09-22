@@ -3,8 +3,8 @@ Stage 3: Department Routing & Chandigarh Sector Detection
 
 This module performs:
 1. Sector/Ward Detection: Automatically extracts Chandigarh sector mentions (e.g. Sector 22, Sector-46, Manimajra, Dhanas).
-2. Department Routing: Matches complaint text against the 4 official Chandigarh municipal departments
-   (MCC Water Supply, CPDL Electricity, MCC Sanitation & Waste, MCC Roads & Infrastructure).
+2. Department Routing: Matches complaint text against the official Chandigarh municipal departments
+   (MCC Water Supply, CPDL Electricity, MCC Sanitation & Waste, MCC Roads & Infrastructure, RTI).
 """
 
 import json
@@ -38,24 +38,7 @@ CHANDIGARH_AREAS = {
 
 
 def _load_departments() -> dict:
-    """Loads department metadata dynamically from Azure Table Storage."""
-    try:
-        from services import storage
-        depts = storage.get_departments()
-        if depts:
-            return {
-                d["id"]: {
-                    "department_name": d["name"],
-                    "official_authority": d["authority"],
-                    "office_location": d["office"],
-                    "helpline": d["helpline"],
-                    "keywords": d.get("keywords", [])
-                }
-                for d in depts
-            }
-    except Exception as e:
-        print(f"[Routing Storage Warning] {e}")
-
+    """Loads department metadata from JSON (or storage)."""
     with open(POLICY_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 

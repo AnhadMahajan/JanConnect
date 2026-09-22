@@ -13,10 +13,10 @@ Welcome to **JanConnect (जन कनेक्ट)**. This document is the prim
 | Stage | Name | Key Module | Description & Technology |
 |---|---|---|---|
 | **1** | **Intake & Multilingual Normalization** | `backend/services/intake.py` | Captures voice/text grievances in Hindi, Punjabi, or English. Uses **Azure AI Translator** to produce an English working copy. |
-| **2** | **Document Intelligence** | `backend/services/extraction.py` | Ingests PDF/Image attachments (bills, IDs). Uses **Azure Document Intelligence (`prebuilt-layout`)** for OCR + **Azure OpenAI (`gpt-5-mini`)** for structured JSON extraction. |
+| **2** | **Document Intelligence & Storage** | `backend/services/extraction.py` | Ingests PDF/Image attachments (bills, IDs). Uses **Azure Document Intelligence (`prebuilt-layout`)** for OCR, **Azure OpenAI (`gpt-5-mini`)** for entity extraction, and **Azure Blob Storage (`citizendocuments`)** for file retention. |
 | **3** | **Department Routing** | `backend/services/routing.py` | Fast, zero-latency local keyword/intent classifier matching grievances to departments (`water`, `electricity`, `rti`). |
 | **4** | **Grounded Specialist Agents** | `backend/services/agents.py` | Queries **Azure AI Search (`department-policies-index`)** for statutory rules/SLAs, then prompts **Azure OpenAI (`gpt-5-mini`)** to synthesize an official citizen advisory. |
-| **5** | **Filing & SLA Tracking** | `backend/services/filing.py` | Generates official tracking IDs (`GRV-XXXXXX`), registers complaint state, and provides real-time lifecycle lookup. |
+| **5** | **Filing & SLA Tracking** | `backend/services/filing.py` | Generates official tracking IDs (`GRV-XXXXXX`), persists complaint records into **Azure Table Storage (`complaints`)**, and provides real-time lifecycle lookup. |
 
 ---
 
@@ -41,10 +41,12 @@ awaazsetu/                      # Project Root (JanConnect)
 │   │   └── citizen_documents.json
 │   └── services/               # Core Pipeline Services
 │       ├── intake.py           # Stage 1: Multilingual translation & complaint loader
+│       ├── speech.py           # Stage 1: Azure Speech audio transcription & voice notes
 │       ├── extraction.py       # Stage 2: Doc Intelligence OCR & Entity extraction
 │       ├── routing.py          # Stage 3: Keyword/intent routing classifier
 │       ├── agents.py           # Stage 4: Azure AI Search + GPT-5-mini grounded agent
-│       └── filing.py           # Stage 5: Ticket generation & in-memory tracking store
+│       ├── filing.py           # Stage 5: Table Storage / Ticket store & Status lifecycle
+│       └── policy_qa.py        # Policy Clarifier: OCR, Grounded Q&A, and Multilingual Translation
 │
 ├── frontend/                   # React 18 + Vite Frontend (Port 5173)
 │   ├── index.html              # HTML shell with Google Fonts (Inter + Outfit)
@@ -52,14 +54,14 @@ awaazsetu/                      # Project Root (JanConnect)
 │   ├── vite.config.js          # Vite config with /api proxy to http://localhost:5001
 │   └── src/
 │       ├── main.jsx            # React root mount
-│       ├── App.jsx             # Main interactive UI (Stepper, Forms, Extraction, Tracker)
+│       ├── App.jsx             # Main interactive UI (Stepper, Policy Clarifier, Officer Desk, Tracker)
 │       └── index.css           # Curated civic CSS design system
 │
 └── graphify-out/               # Knowledge Graph & Codebase Maps
-    ├── graph.json              # 90-node, 137-edge codebase graph
+    ├── graph.json              # Codebase graph
     ├── graph.html              # Interactive 3D/WebGL graph visualizer
     ├── GRAPH_REPORT.md         # Architecture, god nodes, and cohesion analysis
-    └── wiki/                   # 18-article code wiki (index.md entrypoint)
+    └── wiki/                   # Code wiki
 ```
 
 ---
@@ -73,10 +75,19 @@ All routes handle both **manual live citizen input** and **mock sample IDs**:
 - `POST /api/route` — Accepts `{ "raw_text": "...", "citizen_name": "..." }` or `{ "complaint_id": "..." }`, returns matched department and score.
 - `POST /api/respond` — Executes Stage 1 (Translation) + Stage 3 (Routing) + Stage 4 (Azure AI Search Grounded Agent Response).
 - `POST /api/file-complaint` — Registers an official ticket and returns `{ "tracking_id": "GRV-XXXXXX", "status": "Filed", ... }`.
-- `GET /api/status/<tracking_id>` — Fetches live status of any filed grievance.
+- `GET /api/status/<tracking_id>` — Fetches live status, resolution notes, and milestone history of any filed grievance.
 - `POST /api/extract-text` — Takes `{ "text": "..." }`, returns structured JSON entities using Azure OpenAI.
 - `POST /api/extract-file` — Takes multipart `file` (PDF/Image), runs Azure Document Intelligence OCR + Azure OpenAI structuring.
+- `POST /api/transcribe-audio` — Takes multipart audio `file` (.wav/.mp3/.m4a), transcribes via Azure Speech SDK with multilingual detection.
+- `GET /api/admin/complaints` — Returns all filed complaints and municipal KPI metrics for the Officer Desk.
+- `POST /api/admin/update-status` — Allows officers to transition workflow status (`Filed` -> `Assigned` -> `Resolved`), record remarks, and assign engineers.
+- `GET /api/policy/samples` & `GET /api/policy/sample/<id>` — Returns official government policy schemes.
+- `POST /api/policy/extract` — Analyzes uploaded policy PDF/Image using Azure Document Intelligence.
+- `POST /api/policy/ask` — Synthesizes grounded legal/policy answers with cited clauses using Azure OpenAI (`gpt-5-mini`).
+- `POST /api/policy/translate` — Translates policy answers into Hindi, Punjabi, Bengali, Tamil, Telugu, etc.
 - `GET /api/documents` & `GET /api/extract/<doc_id>` — Mock document fallbacks.
+
+
 
 ---
 
@@ -93,8 +104,13 @@ The project is connected to active Azure resources specified in `backend/.env`:
    - Automatically detects Hindi (`hi`), Punjabi (`pa`), etc., and translates to English for routing and reasoning.
 4. **Azure Document Intelligence**:
    - `prebuilt-layout` model reads binary streams (`io.BytesIO(file_bytes)`) to extract full OCR text from uploaded PDFs/images.
-5. **Resilient Fallbacks**:
+5. **Azure Storage Account (Table Database + Blob Storage)**:
+   - Persists all filed grievance tickets into Azure Table Storage (`complaints` table).
+   - Stores citizen proof documents and bills in Azure Blob Storage (`citizendocuments` container).
+   - Automatically initializes tables and containers upon first interaction.
+6. **Resilient Fallbacks**:
    - If any Azure service is ever missing credentials or unreachable, all modules gracefully fall back to local mock data so the application never crashes.
+
 
 ---
 

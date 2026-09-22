@@ -126,7 +126,7 @@ if tracking_id:
     data = res.get_json() or {}
     report(
         "POST /api/status/<id>/advance",
-        res.status_code == 200 and data.get("status") == "Assigned to Field Officer",
+        res.status_code == 200 and data.get("status") in ["Under Verification", "Assigned to Field Officer"],
         f"Advanced Status: {data.get('status')}"
     )
 

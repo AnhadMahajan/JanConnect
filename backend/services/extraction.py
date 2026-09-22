@@ -13,9 +13,7 @@ import os
 import re
 from dotenv import load_dotenv
 
-ENV_PATH = os.path.join(os.path.dirname(__file__), "..", ".env")
-load_dotenv(ENV_PATH)
-
+load_dotenv()
 
 MOCK_PATH = os.path.join(
     os.path.dirname(__file__), "..", "mock_data", "citizen_documents.json"
@@ -35,60 +33,64 @@ def extract_document(doc_id: str) -> dict:
     return docs[doc_id]
 
 
+import uuid
+
 def list_available_mock_documents() -> list:
     return list(_load_documents().keys())
 
 
-def extract_document_from_bytes(file_bytes: bytes, content_type: str = "application/pdf", file_name: str = None) -> dict:
+def upload_document_to_blob(file_bytes: bytes, filename: str = "document.pdf", content_type: str = "application/pdf") -> str:
+    """
+    Uploads an uploaded citizen document to Azure Blob Storage ('citizendocuments' container).
+    Returns the blob URL or None if unconfigured/failed.
+    """
+    conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    if not conn_str or "<your" in conn_str or "your_account_name" in conn_str or "your_key_here" in conn_str or "your_storage_account_name" in conn_str:
+        return None
+
+    try:
+        from azure.storage.blob import BlobServiceClient, ContentSettings
+        from azure.core.exceptions import ResourceExistsError
+
+        blob_service = BlobServiceClient.from_connection_string(conn_str)
+        container_name = "citizendocuments"
+        container_client = blob_service.get_container_client(container_name)
+        try:
+            container_client.create_container()
+            print("[Azure Blob Storage] Created 'citizendocuments' container successfully.")
+        except ResourceExistsError:
+            pass
+        except Exception as ce:
+            print(f"[Azure Blob Storage Notice] Container status: {ce}")
+
+        safe_filename = re.sub(r"[^a-zA-Z0-9_.-]", "_", filename or "document.pdf")
+        unique_name = f"{uuid.uuid4().hex[:8]}_{safe_filename}"
+        blob_client = container_client.get_blob_client(unique_name)
+        blob_client.upload_blob(
+            file_bytes,
+            overwrite=True,
+            content_settings=ContentSettings(content_type=content_type or "application/pdf")
+        )
+        print(f"[Azure Blob Storage] Successfully stored document: {blob_client.url}")
+        return blob_client.url
+    except Exception as e:
+        print(f"[Azure Blob Storage Warning] Failed to upload document blob: {e}")
+        return None
+
+
+def extract_document_from_bytes(file_bytes: bytes, content_type: str = "application/pdf", filename: str = "document.pdf") -> dict:
     """
     Analyzes an uploaded citizen document (PDF, PNG, JPG) using Azure Document Intelligence,
-    persists attachment to Azure Blob Storage, and extracts structured entities via Azure OpenAI.
+    persists the document to Azure Blob Storage if available,
+    then formats structured entities via Azure OpenAI.
     """
-    from services import storage
+    blob_url = upload_document_to_blob(file_bytes, filename=filename, content_type=content_type)
 
     endpoint = os.getenv("AZURE_DOC_INTEL_ENDPOINT")
     key = os.getenv("AZURE_DOC_INTEL_KEY")
     extracted_text = ""
 
-    # Optional: Persist copy to Azure Blob Storage
-    blob_url = None
-    if file_name and file_bytes:
-        safe_name = f"{int(os.times().system * 1000)}_{os.path.basename(file_name)}"
-        blob_url = storage.upload_document_blob(safe_name, file_bytes, content_type)
-
-    # If plain text file, parse directly with Azure OpenAI without calling OCR
-    is_plain_text = (
-        (file_name and file_name.lower().endswith((".txt", ".csv", ".json", ".log")))
-        or content_type in ("text/plain", "text/csv", "application/json")
-    )
-
-    if is_plain_text:
-        try:
-            raw_text = file_bytes.decode("utf-8", errors="ignore").strip()
-            if raw_text:
-                structured = extract_document_from_text(raw_text)
-                structured["_source"] = "Plain Document + Azure OpenAI (GPT-5-mini)"
-                if blob_url:
-                    structured["_blob_url"] = blob_url
-                return structured
-        except Exception as e:
-            print(f"[Plain text extraction notice] {e}")
-
-    # Detect supported binary formats for Azure Document Intelligence
-    if file_bytes.startswith(b"%PDF"):
-        actual_content_type = "application/pdf"
-    elif file_bytes.startswith(b"\x89PNG"):
-        actual_content_type = "image/png"
-    elif file_bytes.startswith(b"\xff\xd8"):
-        actual_content_type = "image/jpeg"
-    elif file_bytes.startswith(b"II*\x00") or file_bytes.startswith(b"MM\x00*"):
-        actual_content_type = "image/tiff"
-    elif file_bytes.startswith(b"BM"):
-        actual_content_type = "image/bmp"
-    else:
-        actual_content_type = content_type if content_type in ("application/pdf", "image/png", "image/jpeg", "image/tiff") else None
-
-    if endpoint and key and "<your" not in endpoint and actual_content_type:
+    if endpoint and key and "<your" not in endpoint:
         try:
             from azure.core.credentials import AzureKeyCredential
             from azure.ai.documentintelligence import DocumentIntelligenceClient
@@ -102,7 +104,7 @@ def extract_document_from_bytes(file_bytes: bytes, content_type: str = "applicat
             poller = client.begin_analyze_document(
                 model_id="prebuilt-layout",
                 body=io.BytesIO(file_bytes),
-                content_type=actual_content_type
+                content_type=content_type or "application/pdf"
             )
             result = poller.result()
 
@@ -121,42 +123,18 @@ def extract_document_from_bytes(file_bytes: bytes, content_type: str = "applicat
             structured["_blob_url"] = blob_url
         return structured
 
-    # Safe Fallback: Check if file is a binary document (PDF / Image) vs plain text
-    is_binary = (
-        file_bytes.startswith(b"%PDF")
-        or file_bytes.startswith(b"\x89PNG")
-        or file_bytes.startswith(b"\xff\xd8")
-        or file_bytes.startswith(b"II*\x00")
-    )
-
-    if is_binary:
-        return {
-            "DOCUMENT_TYPE": "Binary Document (PDF / Image Attachment)",
-            "STATUS": "Attachment Registered",
-            "FILE_SIZE_KB": round(len(file_bytes) / 1024, 2),
-            "CONTENT_TYPE": content_type or "application/octet-stream",
-            "VERIFICATION_NOTICE": "Attached to grievance dossier for official municipal inspection.",
-            "_source": "Azure Storage Attachment Store",
-            "_blob_url": blob_url or ""
-        }
-
-    # Plain text document fallback
+    # Fallback to local text extraction if OCR is unavailable
     try:
-        raw_preview = file_bytes[:3000].decode("utf-8", errors="ignore").strip()
-        if raw_preview and any(c.isalnum() for c in raw_preview):
-            structured = extract_document_from_text(raw_preview)
-            if blob_url:
-                structured["_blob_url"] = blob_url
-            return structured
+        raw_preview = file_bytes[:2000].decode("utf-8", errors="ignore")
+        fallback = extract_document_from_text(raw_preview)
+        if blob_url:
+            fallback["_blob_url"] = blob_url
+        return fallback
     except Exception:
-        pass
-
-    return {
-        "DOCUMENT_TYPE": "Uploaded Citizen Attachment",
-        "STATUS": "File received",
-        "_source": "Local Store",
-        "_blob_url": blob_url or ""
-    }
+        fallback = {"DOCUMENT_TYPE": "Uploaded Document", "STATUS": "File received"}
+        if blob_url:
+            fallback["_blob_url"] = blob_url
+        return fallback
 
 
 
@@ -180,21 +158,21 @@ def extract_document_from_text(doc_text: str) -> dict:
             )
 
             prompt = (
-                "You are an expert document analysis engine for Indian civic and municipal records, specifically configured for Chandigarh (MCC water bills, CPDL electricity bills, e-Sampark receipts, property tax, voter ID).\n"
+                "You are an expert document analysis engine for Indian civic and municipal records (electricity bills, water bills, voter ID, RTI forms, property tax).\n"
                 "Extract ALL available details from the document text below into a clean JSON dictionary.\n\n"
                 "Include all identifiable fields present in the text, such as:\n"
-                "- SERVICE_PROVIDER (e.g. Municipal Corporation Chandigarh - MCC, Chandigarh Power Distribution Limited - CPDL, e-Sampark)\n"
+                "- SERVICE_PROVIDER (e.g. Tata Power-DDL, Delhi Jal Board, PSPCL)\n"
                 "- CITIZEN_NAME / CONSUMER_NAME\n"
                 "- CA_NUMBER / CONSUMER_NUMBER / ACCOUNT_NUMBER\n"
-                "- CHANDIGARH_SECTOR / WARD\n"
                 "- BILL_DATE\n"
                 "- DUE_DATE\n"
                 "- BILL_PERIOD\n"
                 "- SANCTIONED_LOAD\n"
                 "- TARIFF_CATEGORY / CONNECTION_TYPE\n"
                 "- CURRENT_METER_READING / PREVIOUS_METER_READING\n"
-                "- UNITS_CONSUMED_KL / UNITS_CONSUMED_KWH\n"
-                "- WATER_CHARGES / SEWERAGE_CESS\n"
+                "- UNITS_CONSUMED_KWH\n"
+                "- CURRENT_DEMAND\n"
+                "- SUBSIDY_AMOUNT\n"
                 "- NET_AMOUNT_PAYABLE / AMOUNT_DUE\n"
                 "- SERVICE_ADDRESS / BILLING_ADDRESS\n\n"
                 "Return ONLY a single valid JSON object. Keys must be clean UPPERCASE names with underscores. "

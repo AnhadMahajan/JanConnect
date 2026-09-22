@@ -248,40 +248,28 @@ export default function GrievanceNavigator({
   return (
     <div>
       {/* CHANDIGARH HELPLINES BANNER */}
-      <div style={{
-        background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-        color: "#ffffff",
-        padding: "0.75rem 1.25rem",
-        borderRadius: "var(--radius-md)",
-        marginBottom: "1.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "0.75rem",
-        boxShadow: "var(--shadow-sm)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <span style={{ fontSize: "1.3rem" }}>🚨</span>
+      <div className="chd-helpline-banner">
+        <div className="helpline-left">
+          <span className="helpline-icon">🚨</span>
           <div>
-            <strong style={{ fontSize: "0.9rem" }}>UT Chandigarh Official 24x7 Civic Helplines:</strong>
-            <div style={{ fontSize: "0.75rem", opacity: 0.8 }}>Integrated Command and Control Centre (ICCC) • Citizen Charters</div>
+            <div className="helpline-title">UT Chandigarh Official 24x7 Civic Helplines</div>
+            <div className="helpline-sub">Integrated Command & Control Centre (ICCC) • Citizen Charters</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-          <span style={{ background: "rgba(255,255,255,0.12)", padding: "0.3rem 0.6rem", borderRadius: "4px", fontSize: "0.78rem" }}>
-            ⚡ Electricity (CPDL): <strong>19121</strong>
-          </span>
-          <span style={{ background: "rgba(255,255,255,0.12)", padding: "0.3rem 0.6rem", borderRadius: "4px", fontSize: "0.78rem" }}>
-            💧 Water Supply: <strong>0172-2540200</strong>
-          </span>
-          <span style={{ background: "rgba(255,255,255,0.12)", padding: "0.3rem 0.6rem", borderRadius: "4px", fontSize: "0.78rem" }}>
-            🗑️ Sanitation WhatsApp: <strong>9915762917</strong>
-          </span>
-          <span style={{ background: "rgba(255,255,255,0.12)", padding: "0.3rem 0.6rem", borderRadius: "4px", fontSize: "0.78rem" }}>
-            🏛️ ICCC Central: <strong>0172-2787200</strong>
-          </span>
+        <div className="helpline-pills">
+          <div className="helpline-pill">
+            <span>⚡ Electricity (CPDL):</span> <strong>19121</strong>
+          </div>
+          <div className="helpline-pill">
+            <span>💧 Water Supply:</span> <strong>0172-2540200</strong>
+          </div>
+          <div className="helpline-pill">
+            <span>🗑️ MOH WhatsApp:</span> <strong>9915762917</strong>
+          </div>
+          <div className="helpline-pill">
+            <span>🏛️ ICCC Central:</span> <strong>0172-2787200</strong>
+          </div>
         </div>
       </div>
 
@@ -318,7 +306,7 @@ export default function GrievanceNavigator({
 
         {intakeMode === "manual" && (
           <div className="manual-form-card">
-            <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "1rem" }}>
+            <div className="intake-form-grid">
               <div className="form-group">
                 <label className="form-label">Citizen Name</label>
                 <input
@@ -335,8 +323,7 @@ export default function GrievanceNavigator({
                 <select
                   value={selectedSector}
                   onChange={(e) => setSelectedSector(e.target.value)}
-                  className="form-input"
-                  style={{ background: "#fff" }}
+                  className="form-input form-select"
                 >
                   <option value="">🔍 Auto-detect sector from text</option>
                   {chandigarhSectors.map((sec) => (
@@ -345,46 +332,46 @@ export default function GrievanceNavigator({
                 </select>
               </div>
 
-              <div style={{ alignSelf: "flex-end", display: "flex", gap: "0.5rem" }}>
-                {/* Browser Speech */}
-                <button
-                  type="button"
-                  className={`mic-btn ${isRecording ? "recording" : ""}`}
-                  onClick={toggleSpeechRecognition}
-                  title="Speak in Hindi, Punjabi, or English"
-                >
-                  <span>🎙️</span>
-                  <span>{isRecording ? "Listening..." : "Browser Voice"}</span>
-                </button>
+              <div className="form-group">
+                <label className="form-label">Voice Intake</label>
+                <div className="voice-btn-row">
+                  {/* Browser Speech */}
+                  <button
+                    type="button"
+                    className={`voice-btn ${isRecording ? "recording" : ""}`}
+                    onClick={toggleSpeechRecognition}
+                    title="Speak in Hindi, Punjabi, or English"
+                  >
+                    <span>🎙️</span>
+                    <span>{isRecording ? "Listening..." : "Browser Voice"}</span>
+                  </button>
 
-                {/* Azure Speech File Upload */}
-                <input
-                  type="file"
-                  ref={audioInputRef}
-                  style={{ display: "none" }}
-                  accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a"
-                  onChange={handleAudioUpload}
-                />
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ height: 42, display: "flex", alignItems: "center", gap: "0.4rem" }}
-                  onClick={() => audioInputRef.current && audioInputRef.current.click()}
-                  disabled={audioUploading}
-                  title="Transcribe recorded audio file using Azure Speech SDK"
-                >
-                  <span>☁️</span>
-                  <span>{audioUploading ? "Transcribing..." : "Azure Speech File"}</span>
-                </button>
+                  {/* Azure Speech File Upload */}
+                  <input
+                    type="file"
+                    ref={audioInputRef}
+                    style={{ display: "none" }}
+                    accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a"
+                    onChange={handleAudioUpload}
+                  />
+                  <button
+                    type="button"
+                    className="voice-btn voice-btn-cloud"
+                    onClick={() => audioInputRef.current && audioInputRef.current.click()}
+                    disabled={audioUploading}
+                    title="Transcribe recorded audio file using Azure Speech SDK"
+                  >
+                    <span>☁️</span>
+                    <span>{audioUploading ? "Transcribing..." : "Azure Speech"}</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: "0.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="form-group">
+              <div className="form-label-row">
                 <label className="form-label">Grievance Description (Hindi, Punjabi, English)</label>
-                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  {customText.length} characters
-                </span>
+                <span className="char-counter">{customText.length} characters</span>
               </div>
               <textarea
                 placeholder="Describe your civic problem (e.g. 'Sector 22 water meter reading is excessively high' or 'Manimajra vich bijli pichhle 4 ghante to band hai' or 'Sector 46 kooda gadi nahi aayi')..."
@@ -399,26 +386,32 @@ export default function GrievanceNavigator({
             </div>
 
             <div className="quick-chips-wrapper">
-              <span className="quick-chip-label">💡 Quick Test Scenarios (Click to Fill):</span>
-              {sampleChips.map((chip, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className="quick-chip"
-                  onClick={() => {
-                    setCustomText(chip.text);
-                    setSelectedSector(chip.sector);
-                    setCitizenName(chip.name);
-                    setRoutingResult(null);
-                    setFiledResult(null);
-                  }}
-                >
-                  {chip.label}
-                </button>
-              ))}
+              <div className="quick-chips-header">
+                <span>💡</span>
+                <span>Quick Test Scenarios (Click to Fill):</span>
+              </div>
+              <div className="quick-chips-list">
+                {sampleChips.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="quick-chip"
+                    onClick={() => {
+                      setCustomText(chip.text);
+                      setSelectedSector(chip.sector);
+                      setCitizenName(chip.name);
+                      setRoutingResult(null);
+                      setFiledResult(null);
+                    }}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
+
 
         {intakeMode === "sample" && (
           <div>
@@ -726,6 +719,24 @@ export default function GrievanceNavigator({
                 </span>
               </div>
             </div>
+
+            {filedResult.report_blob_url && (
+              <div style={{ marginTop: "1rem", padding: "0.75rem 1rem", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                <div>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#166534" }}>☁️ Official Grievance Dossier Archived in Azure Blob Vault</span>
+                  <div style={{ fontSize: "0.75rem", color: "#15803d" }}>Permanent cloud audit file registered for this complaint</div>
+                </div>
+                <a
+                  href={filedResult.report_blob_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: "0.75rem", padding: "0.3rem 0.75rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
+                >
+                  <span>📑</span> View Official Dossier (JSON) ↗
+                </a>
+              </div>
+            )}
 
             <div style={{ marginTop: "1rem", textAlign: "right" }}>
               <button

@@ -96,15 +96,41 @@ export default function StatusTracker({
       <form onSubmit={handleFormSubmit} className="tracker-input-group">
         <input
           type="text"
-          placeholder="Enter Tracking ID (e.g. GRV-XXXXXXXX)"
+          placeholder="Enter Tracking ID (e.g. GRV-CHD-WTR-22B or GRV-XXXXXXXX)"
           value={lookupId}
           onChange={(e) => setLookupId(e.target.value)}
           className="tracker-input"
         />
-        <button type="submit" className="btn btn-primary" disabled={trackingLoading || !lookupId.trim()}>
-          {trackingLoading ? "Searching Azure DB..." : "🔍 Check Status"}
+        <button type="submit" className="btn btn-primary tracker-btn" disabled={trackingLoading || !lookupId.trim()}>
+          {trackingLoading ? "Searching..." : "🔍 Check Status"}
         </button>
       </form>
+
+      {/* Quick Lookup Chips */}
+      <div className="quick-chips-wrapper" style={{ marginTop: "0.25rem", marginBottom: "1.25rem", borderTop: "none", paddingTop: 0 }}>
+        <div className="quick-chips-header">
+          <span>💡</span>
+          <span>Sample Chandigarh Tickets for Quick Lookup:</span>
+        </div>
+        <div className="quick-chips-list">
+          {[
+            { id: "GRV-CHD-WTR-22B", label: "💧 GRV-CHD-WTR-22B (Sec 22 Water)" },
+            { id: "GRV-CHD-PWR-35C", label: "⚡ GRV-CHD-PWR-35C (Sec 35 Power)" },
+            { id: "GRV-CHD-PWR-13M", label: "⚡ GRV-CHD-PWR-13M (Manimajra)" },
+            { id: "GRV-CHD-SAN-46D", label: "🗑️ GRV-CHD-SAN-46D (Sec 46 Waste)" },
+            { id: "GRV-CHD-RDS-19C", label: "🚧 GRV-CHD-RDS-19C (Sec 19 Pothole)" }
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className="quick-chip"
+              onClick={() => handleLookupStatus(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {trackedStatus && (
         <div style={{ marginTop: "1.5rem" }}>
@@ -161,6 +187,24 @@ export default function StatusTracker({
                 <p style={{ fontSize: "0.9rem", color: "var(--text-main)" }}>"{trackedStatus.complaint_text}"</p>
               </div>
 
+              {trackedStatus.report_blob_url && (
+                <div style={{ marginTop: "0.75rem", padding: "0.75rem 1rem", background: "#eff6ff", borderRadius: "var(--radius-md)", border: "1px solid #bfdbfe", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <div>
+                    <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#1e40af" }}>☁️ Official Grievance Dossier in Azure Blob Storage</span>
+                    <div style={{ fontSize: "0.72rem", color: "#3b82f6" }}>Immutable municipal audit file registered for this complaint</div>
+                  </div>
+                  <a
+                    href={trackedStatus.report_blob_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: "0.75rem", padding: "0.25rem 0.65rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
+                  >
+                    <span>📑</span> Open Cloud Dossier ↗
+                  </a>
+                </div>
+              )}
+
               {/* Classroom Demo Action: Advance Status */}
               <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", paddingTop: "1rem", borderTop: "1px dashed #cbd5e1" }}>
                 <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
@@ -205,41 +249,45 @@ export default function StatusTracker({
             {feedLoading ? "Loading complaints from Azure Table Storage..." : "No grievances found in database yet. File one in Stage 1!"}
           </div>
         ) : (
-          <div style={{ overflowX: "auto", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
-              <thead style={{ background: "#f8fafc", borderBottom: "1px solid var(--border-color)" }}>
+          <div className="admin-table-container">
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--text-muted)" }}>Tracking ID</th>
-                  <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--text-muted)" }}>Citizen</th>
-                  <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--text-muted)" }}>Department</th>
-                  <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--text-muted)" }}>Status</th>
-                  <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--text-muted)" }}>Action</th>
+                  <th>Tracking ID</th>
+                  <th>Citizen</th>
+                  <th>Department</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {recentGrievances.map((g, idx) => (
-                  <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9", background: trackedStatus?.tracking_id === g.tracking_id ? "#f0fdf4" : "transparent" }}>
-                    <td style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--primary)" }}>{g.tracking_id}</td>
-                    <td style={{ padding: "0.75rem 1rem" }}>{g.citizen_name}</td>
-                    <td style={{ padding: "0.75rem 1rem", fontSize: "0.8rem" }}>{g.department_name}</td>
-                    <td style={{ padding: "0.75rem 1rem" }}>
+                  <tr key={idx} style={{ background: trackedStatus?.tracking_id === g.tracking_id ? "#f0fdf4" : undefined }}>
+                    <td>
+                      <code style={{ fontWeight: 700, color: "var(--primary)" }}>{g.tracking_id}</code>
+                    </td>
+                    <td>
+                      <strong>{g.citizen_name || "Chandigarh Citizen"}</strong>
+                    </td>
+                    <td style={{ fontSize: "0.82rem", color: "#475569" }}>{g.department_name}</td>
+                    <td>
                       <span
                         className="badge"
                         style={{
                           fontSize: "0.75rem",
-                          padding: "0.2rem 0.5rem",
+                          padding: "0.25rem 0.55rem",
                           background: `${getStatusColor(g.status)}15`,
                           color: getStatusColor(g.status),
                           border: `1px solid ${getStatusColor(g.status)}40`
                         }}
                       >
-                        {g.status}
+                        ● {g.status}
                       </span>
                     </td>
-                    <td style={{ padding: "0.75rem 1rem" }}>
+                    <td>
                       <button
                         className="btn btn-secondary btn-sm"
-                        style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}
+                        style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
                         onClick={() => handleLookupStatus(g.tracking_id)}
                       >
                         Inspect →

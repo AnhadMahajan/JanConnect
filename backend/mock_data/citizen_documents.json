@@ -1,46 +1,18 @@
 {
   "doc_1": {
-    "document_type": "mcc_water_bill",
-    "authority": "Municipal Corporation Chandigarh (MCC)",
-    "account_number": "CHD-WTR-22B-8902",
-    "consumer_name": "Virender Sharma",
-    "service_address": "House No 1240, Sector 22-B, Chandigarh - 160022",
-    "sub_division": "Sub Division No. 2, Sector 22",
-    "billing_period": "August 2026",
-    "meter_number": "MTR-CH-88319",
-    "previous_reading_kl": 1420,
-    "current_reading_kl": 2890,
-    "units_consumed_kl": 1470,
-    "water_charges": "Rs. 3,850",
-    "sewerage_cess_20pct": "Rs. 770",
-    "total_amount_due": "Rs. 4,850",
-    "due_date": "15-09-2026",
-    "e_sampark_receipt": "SMP-CHD-2026-99214"
+    "document_type": "water_bill",
+    "account_number": "WSB-88213-XX",
+    "billing_period": "2026-08",
+    "amount_due": "Rs. 1,240",
+    "previous_reading": 1820,
+    "current_reading": 2650,
+    "address": "Sample Address Line, Rajpura, Punjab"
   },
   "doc_2": {
-    "document_type": "cpdl_electricity_bill",
-    "authority": "Chandigarh Power Distribution Limited (CPDL)",
-    "account_number": "CPDL-DS-35C-4410",
-    "consumer_name": "Harpreet Singh",
-    "service_address": "House 312, Sector 35-C, Chandigarh - 160035",
-    "sub_division": "Operation Sub-Division, Sector 34",
-    "tariff_category": "Domestic Supply (DS)",
-    "sanctioned_load_kw": "5.00 KW",
-    "meter_status": "OK",
-    "units_consumed_kwh": 480,
-    "amount_due": "Rs. 2,640",
-    "due_date": "22-09-2026",
-    "helpline": "19121"
-  },
-  "doc_3": {
-    "document_type": "e_sampark_citizen_receipt",
-    "authority": "Chandigarh Administration e-Sampark Center",
-    "center_location": "e-Sampark Center, Sector 17, Chandigarh",
-    "token_number": "CHD-SMP-2026-10492",
-    "service_requested": "MCC Public Grievance Registration - Water Pressure Defect",
-    "applicant_name": "Pooja Verma",
-    "contact_number": "9876543210",
-    "registered_date": "08-09-2026",
-    "designated_authority": "Sub-Divisional Officer (PH), Municipal Corporation Chandigarh"
+    "document_type": "identity_proof",
+    "id_type": "Voter ID",
+    "id_number_last4": "8823",
+    "name": "Sample Citizen C",
+    "address": "Sample Address Line, Rajpura, Punjab"
   }
 }
