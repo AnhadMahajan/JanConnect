@@ -1997,7 +1997,159 @@ body {
 
 .blob-link-badge:hover {
   background: #dbeafe;
+}
+
+/* ========================================================
+   ADMIN PORTAL & LOGIN STYLES
+   ======================================================== */
+.btn-admin-portal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #ffffff;
+  border: 1px solid #4338ca;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(30, 27, 75, 0.25);
+  white-space: nowrap;
+}
+
+.btn-admin-portal:hover {
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  border-color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+.badge-admin-active {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  font-weight: 700;
+}
+
+.btn-logout {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #7f1d1d;
+}
+
+.admin-login-dialog {
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: var(--shadow-xl);
+  border: 1.5px solid #c7d2fe;
+  overflow: hidden;
+}
+
+.admin-login-header {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #ffffff;
+  padding: 1.75rem 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.admin-seal-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.admin-login-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.admin-login-sub {
+  font-size: 0.76rem;
+  color: #c7d2fe;
+  margin-top: 0.35rem;
+  line-height: 1.45;
+}
+
+.admin-login-form {
+  padding: 1.5rem;
+}
+
+.admin-login-error {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #991b1b;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-creds-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: #1e40af;
+}
+
+.demo-creds-banner code {
+  background: #dbeafe;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.demo-autofill-btn {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  background: #ffffff;
   border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.demo-autofill-btn:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.admin-login-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.officer-desk-container {
+  animation: modal-appear 0.2s ease-out;
+}
+
+.officer-desk-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Responsive */

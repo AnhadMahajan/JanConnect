@@ -5,6 +5,8 @@ import GrievanceNavigator from "./components/GrievanceNavigator";
 import DocumentIntelligence from "./components/DocumentIntelligence";
 import StatusTracker from "./components/StatusTracker";
 import DepartmentMatrix from "./components/DepartmentMatrix";
+import OfficerDesk from "./components/OfficerDesk";
+import AdminLoginModal from "./components/AdminLoginModal";
 
 const DEFAULT_CHANDIGARH_COMPLAINTS = [
   {
@@ -47,8 +49,19 @@ const DEFAULT_CHANDIGARH_COMPLAINTS = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("navigator"); // "navigator", "documents", "tracker", "admin", "policy_qa", "departments"
+  const [activeTab, setActiveTab] = useState("navigator"); // "navigator", "documents", "tracker", "policy_qa", "departments"
   
+  // Page View & Admin Portal Auth State
+  const [currentView, setCurrentView] = useState("citizen"); // "citizen" | "admin"
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    try {
+      return sessionStorage.getItem("janconnect_admin_auth") === "true";
+    } catch {
+      return false;
+    }
+  });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   // Pipeline State
   const [complaints, setComplaints] = useState(DEFAULT_CHANDIGARH_COMPLAINTS);
   const [selectedComplaintId, setSelectedComplaintId] = useState("complaint_1");
@@ -69,19 +82,6 @@ export default function App() {
 
   // Dynamic Department Catalog (Fetched directly from Azure Table Storage / local)
   const [departmentsList, setDepartmentsList] = useState([]);
-
-  // Feature D: Officer Desk State
-  const [adminComplaints, setAdminComplaints] = useState([]);
-  const [adminMetrics, setAdminMetrics] = useState(null);
-  const [adminLoading, setAdminLoading] = useState(false);
-  const [adminDeptFilter, setAdminDeptFilter] = useState("all");
-  const [adminStatusFilter, setAdminStatusFilter] = useState("all");
-  const [adminSearchQuery, setAdminSearchQuery] = useState("");
-  const [editingComplaint, setEditingComplaint] = useState(null);
-  const [newStatusValue, setNewStatusValue] = useState("Assigned to Field Engineer");
-  const [officerNameValue, setOfficerNameValue] = useState("Er. V. Sharma (Junior Engineer)");
-  const [officerRemarksValue, setOfficerRemarksValue] = useState("");
-  const [statusUpdating, setStatusUpdating] = useState(false);
 
   // Policy Clarifier & Doubts Q&A State
   const [samplePolicies, setSamplePolicies] = useState([]);
@@ -138,52 +138,38 @@ export default function App() {
     setActiveTab("tracker");
   };
 
-  // Officer Desk: Load all complaints and metrics
-  const loadAdminComplaints = async () => {
-    setAdminLoading(true);
-    try {
-      const res = await fetch("/api/admin/complaints");
-      const data = await res.json();
-      setAdminComplaints(data.complaints || []);
-      setAdminMetrics(data.metrics || null);
-    } catch (e) {
-      console.error("Error loading admin complaints:", e);
-    } finally {
-      setAdminLoading(false);
+  // Admin Portal Navigation & Auth Handlers
+  const handleOpenAdminPortal = () => {
+    if (isAdminAuthenticated) {
+      setCurrentView("admin");
+    } else {
+      setShowLoginModal(true);
     }
   };
 
-  // Officer Desk: Update status
-  const handleUpdateStatusSubmit = async (e) => {
-    e.preventDefault();
-    if (!editingComplaint) return;
-    setStatusUpdating(true);
+  const handleLoginSuccess = () => {
+    setIsAdminAuthenticated(true);
+    setShowLoginModal(false);
+    setCurrentView("admin");
+  };
+
+  const handleLogout = () => {
     try {
-      const res = await fetch("/api/admin/update-status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tracking_id: editingComplaint.tracking_id,
-          new_status: newStatusValue,
-          officer_name: officerNameValue,
-          remarks: officerRemarksValue,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        await loadAdminComplaints();
-        if (trackedStatus && trackedStatus.tracking_id === editingComplaint.tracking_id) {
-          setTrackedStatus(data.complaint);
-        }
-        setEditingComplaint(null);
-      } else {
-        alert("Failed to update status: " + (data.error || "Unknown error"));
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
-      alert("Error updating status.");
-    } finally {
-      setStatusUpdating(false);
+      sessionStorage.removeItem("janconnect_admin_auth");
+    } catch {
+      // ignore
+    }
+    setIsAdminAuthenticated(false);
+    setCurrentView("citizen");
+  };
+
+  const handleSwitchToCitizen = () => {
+    setCurrentView("citizen");
+  };
+
+  const handleOfficerComplaintUpdated = (updatedComplaint) => {
+    if (trackedStatus && trackedStatus.tracking_id === updatedComplaint.tracking_id) {
+      setTrackedStatus(updatedComplaint);
     }
   };
 
@@ -367,71 +353,63 @@ export default function App() {
   // Determine current active pipeline step
   const currentStep = filedResult ? 5 : routingResult ? 4 : selectedComplaintId ? 2 : 1;
 
-  // Filter complaints for Officer Desk
-  const filteredAdminComplaints = adminComplaints.filter((c) => {
-    const matchesDept = adminDeptFilter === "all" || c.department_id === adminDeptFilter;
-    const matchesStatus = adminStatusFilter === "all" || c.status === adminStatusFilter;
-    const q = adminSearchQuery.toLowerCase();
-    const matchesSearch =
-      !q ||
-      c.tracking_id.toLowerCase().includes(q) ||
-      (c.citizen_name && c.citizen_name.toLowerCase().includes(q)) ||
-      (c.complaint_text && c.complaint_text.toLowerCase().includes(q));
-    return matchesDept && matchesStatus && matchesSearch;
-  });
-
   return (
     <div className="app-layout">
-      {/* Top Navigation Bar with UT Chandigarh Pilot Branding */}
-      <Navbar />
+      {/* Top Navigation Bar with UT Chandigarh Pilot Branding & Admin Portal Access */}
+      <Navbar
+        currentView={currentView}
+        isAdminAuthenticated={isAdminAuthenticated}
+        onOpenAdminPortal={handleOpenAdminPortal}
+        onSwitchToCitizen={handleSwitchToCitizen}
+        onLogout={handleLogout}
+      />
 
       {/* Main Container */}
       <main className="main-content">
-        {/* Navigation Tabs */}
-        <nav className="nav-tabs" aria-label="Sections">
-          <button
-            className={`tab-btn ${activeTab === "navigator" ? "active" : ""}`}
-            onClick={() => setActiveTab("navigator")}
-          >
-            <span>⚡</span> Grievance Navigator
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "documents" ? "active" : ""}`}
-            onClick={() => setActiveTab("documents")}
-          >
-            <span>📄</span> Document Intelligence (Stage 2)
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "tracker" ? "active" : ""}`}
-            onClick={() => setActiveTab("tracker")}
-          >
-            <span>🔍</span> Track Status (Stage 5)
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "admin" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("admin");
-              loadAdminComplaints();
-            }}
-          >
-            <span>🛡️</span> Officer Desk
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "policy_qa" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("policy_qa");
-              if (samplePolicies.length === 0) loadSamplePolicies();
-            }}
-          >
-            <span>📜</span> Policy Clarifier & Q&A
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "departments" ? "active" : ""}`}
-            onClick={() => setActiveTab("departments")}
-          >
-            <span>🏛️</span> Chandigarh Authorities
-          </button>
-        </nav>
+        {currentView === "admin" ? (
+          <OfficerDesk
+            onBackToCitizen={handleSwitchToCitizen}
+            onLogout={handleLogout}
+            onComplaintUpdated={handleOfficerComplaintUpdated}
+          />
+        ) : (
+          <>
+            {/* Citizen Navigation Tabs */}
+            <nav className="nav-tabs" aria-label="Sections">
+              <button
+                className={`tab-btn ${activeTab === "navigator" ? "active" : ""}`}
+                onClick={() => setActiveTab("navigator")}
+              >
+                <span>⚡</span> Grievance Navigator
+              </button>
+              <button
+                className={`tab-btn ${activeTab === "documents" ? "active" : ""}`}
+                onClick={() => setActiveTab("documents")}
+              >
+                <span>📄</span> Document Intelligence (Stage 2)
+              </button>
+              <button
+                className={`tab-btn ${activeTab === "tracker" ? "active" : ""}`}
+                onClick={() => setActiveTab("tracker")}
+              >
+                <span>🔍</span> Track Status (Stage 5)
+              </button>
+              <button
+                className={`tab-btn ${activeTab === "policy_qa" ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab("policy_qa");
+                  if (samplePolicies.length === 0) loadSamplePolicies();
+                }}
+              >
+                <span>📜</span> Policy Clarifier & Q&A
+              </button>
+              <button
+                className={`tab-btn ${activeTab === "departments" ? "active" : ""}`}
+                onClick={() => setActiveTab("departments")}
+              >
+                <span>🏛️</span> Chandigarh Authorities
+              </button>
+            </nav>
 
         {/* TAB 1: CHANDIGARH GRIEVANCE NAVIGATOR */}
         {activeTab === "navigator" && (
@@ -477,268 +455,7 @@ export default function App() {
           />
         )}
 
-        {/* TAB 4: MUNICIPAL OFFICER DESK */}
-        {activeTab === "admin" && (
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <h2 className="card-title">
-                  <span>🛡️</span> Municipal Officer Resolution Desk
-                </h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.25rem" }}>
-                  Official municipal administration dashboard for Chandigarh zonal officers and engineers.
-                </p>
-              </div>
-              <button className="btn btn-secondary btn-sm" onClick={loadAdminComplaints} disabled={adminLoading}>
-                {adminLoading ? "Refreshing..." : "🔄 Refresh Desk"}
-              </button>
-            </div>
-
-            {/* KPI Summary Tiles */}
-            {adminMetrics && (
-              <div className="admin-kpi-grid">
-                <div className="kpi-card">
-                  <div className="kpi-icon" style={{ background: "rgba(79, 70, 229, 0.1)", color: "var(--primary)" }}>📋</div>
-                  <div>
-                    <div className="kpi-value">{adminMetrics.total}</div>
-                    <div className="kpi-label">Total Grievances</div>
-                  </div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-icon" style={{ background: "rgba(245, 158, 11, 0.1)", color: "#d97706" }}>⏳</div>
-                  <div>
-                    <div className="kpi-value">{adminMetrics.pending_verification}</div>
-                    <div className="kpi-label">Pending Verification</div>
-                  </div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-icon" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#2563eb" }}>👷</div>
-                  <div>
-                    <div className="kpi-value">{adminMetrics.in_progress}</div>
-                    <div className="kpi-label">Assigned / In Progress</div>
-                  </div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-icon" style={{ background: "rgba(16, 185, 129, 0.1)", color: "#059669" }}>✅</div>
-                  <div>
-                    <div className="kpi-value">{adminMetrics.resolved}</div>
-                    <div className="kpi-label">Resolved & Closed</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Search & Filter Controls */}
-            <div className="admin-controls-bar">
-              <input
-                type="text"
-                placeholder="Search by Tracking ID, Citizen Name, or Keyword..."
-                value={adminSearchQuery}
-                onChange={(e) => setAdminSearchQuery(e.target.value)}
-                className="form-input admin-search-input"
-              />
-              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                <select
-                  value={adminDeptFilter}
-                  onChange={(e) => setAdminDeptFilter(e.target.value)}
-                  className="form-input"
-                  style={{ width: "auto" }}
-                >
-                  <option value="all">All Departments</option>
-                  <option value="water">💧 Water Supply (MCC)</option>
-                  <option value="electricity">⚡ Electricity (CPDL)</option>
-                  <option value="sanitation">🗑️ Sanitation (MOH)</option>
-                  <option value="roads">🚧 Roads & B&R (MCC)</option>
-                  <option value="rti">📜 RTI Cell</option>
-                </select>
-
-                <select
-                  value={adminStatusFilter}
-                  onChange={(e) => setAdminStatusFilter(e.target.value)}
-                  className="form-input"
-                  style={{ width: "auto" }}
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="Filed">Filed</option>
-                  <option value="Under Verification">Under Verification</option>
-                  <option value="Assigned to Field Engineer">Assigned to Field Engineer</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Complaints Table */}
-            <div className="admin-table-container">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Tracking ID</th>
-                    <th>Citizen</th>
-                    <th>Department</th>
-                    <th>Grievance Summary</th>
-                    <th>Assigned Officer</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAdminComplaints.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>
-                        No grievances found matching the selected filters.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredAdminComplaints.map((c) => (
-                      <tr key={c.tracking_id}>
-                        <td>
-                          <code style={{ fontWeight: 700, color: "var(--primary)" }}>{c.tracking_id}</code>
-                        </td>
-                        <td>
-                          <strong>{c.citizen_name}</strong>
-                        </td>
-                        <td>
-                          <span className="badge badge-secondary">{c.department_name}</span>
-                        </td>
-                        <td style={{ maxWidth: 280, fontSize: "0.85rem", color: "#475569" }}>
-                          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {c.complaint_text}
-                          </div>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: "0.82rem", color: "#1e293b" }}>{c.assigned_officer}</span>
-                        </td>
-                        <td>
-                          <span
-                            className="badge"
-                            style={{
-                              background:
-                                c.status === "Resolved"
-                                  ? "#d1fae5"
-                                  : c.status === "Assigned to Field Engineer"
-                                  ? "#e0e7ff"
-                                  : c.status === "Under Verification"
-                                  ? "#fef3c7"
-                                  : "#f1f5f9",
-                              color:
-                                c.status === "Resolved"
-                                  ? "#065f46"
-                                  : c.status === "Assigned to Field Engineer"
-                                  ? "#3730a3"
-                                  : c.status === "Under Verification"
-                                  ? "#92400e"
-                                  : "#475569",
-                            }}
-                          >
-                            {c.status}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
-                            onClick={() => {
-                              setEditingComplaint(c);
-                              setNewStatusValue(c.status);
-                              setOfficerNameValue(c.assigned_officer !== "Unassigned" ? c.assigned_officer : "Er. V. Sharma (Junior Engineer)");
-                              setOfficerRemarksValue(c.remarks !== "No remarks" ? c.remarks : "");
-                            }}
-                          >
-                            ✏️ Update
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Modal: Update Complaint Status Dialog */}
-            {editingComplaint && (
-              <div className="modal-overlay">
-                <div className="modal-dialog">
-                  <div className="modal-header">
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: "1.1rem" }}>Update Grievance Status</h3>
-                      <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                        Ticket: <strong>{editingComplaint.tracking_id}</strong> ({editingComplaint.citizen_name})
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setEditingComplaint(null)}
-                      style={{ border: "none", background: "transparent", fontSize: "1.2rem", cursor: "pointer" }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleUpdateStatusSubmit} style={{ marginTop: "1rem" }}>
-                    <div className="form-group" style={{ marginBottom: "1rem" }}>
-                      <label className="form-label">Workflow Status</label>
-                      <select
-                        value={newStatusValue}
-                        onChange={(e) => setNewStatusValue(e.target.value)}
-                        className="form-input"
-                        required
-                      >
-                        <option value="Filed">Filed</option>
-                        <option value="Under Verification">Under Verification</option>
-                        <option value="Assigned to Field Engineer">Assigned to Field Engineer</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: "1rem" }}>
-                      <label className="form-label">Assigned Officer / Engineer</label>
-                      <input
-                        type="text"
-                        value={officerNameValue}
-                        onChange={(e) => setOfficerNameValue(e.target.value)}
-                        className="form-input"
-                        placeholder="e.g. Er. S. K. Verma (Assistant Engineer)"
-                        required
-                      />
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: "1.25rem" }}>
-                      <label className="form-label">Official Resolution Remarks</label>
-                      <textarea
-                        value={officerRemarksValue}
-                        onChange={(e) => setOfficerRemarksValue(e.target.value)}
-                        className="form-textarea"
-                        placeholder="Detail site visit, actions taken, pipeline/transformer repair notes..."
-                        style={{ minHeight: "80px" }}
-                        required
-                      ></textarea>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => setEditingComplaint(null)}
-                        disabled={statusUpdating}
-                      >
-                        Cancel
-                      </button>
-                      <button type="submit" className="btn btn-primary" disabled={statusUpdating}>
-                        {statusUpdating ? "Saving to Azure..." : "✓ Confirm & Update Status"}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 5: POLICY CLARIFIER & DOUBTS Q&A */}
+        {/* TAB 4: POLICY CLARIFIER & DOUBTS Q&A */}
         {activeTab === "policy_qa" && (
           <div className="card">
             <div className="card-header">
@@ -1122,9 +839,11 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 6: CHANDIGARH AUTHORITIES & POLICY MATRIX */}
+        {/* TAB 5: CHANDIGARH AUTHORITIES & POLICY MATRIX */}
         {activeTab === "departments" && (
           <DepartmentMatrix departmentsList={departmentsList} />
+        )}
+          </>
         )}
       </main>
 
@@ -1137,6 +856,14 @@ export default function App() {
           Municipal Corporation Chandigarh (MCC) • Chandigarh Power Distribution Limited (CPDL) • Powered by Azure AI Foundry (gpt-5-mini) • Azure Document Intelligence • Azure Storage
         </p>
       </footer>
+
+      {/* Admin Login Dialog Modal */}
+      {showLoginModal && (
+        <AdminLoginModal
+          onLoginSuccess={handleLoginSuccess}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }
