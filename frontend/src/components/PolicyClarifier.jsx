@@ -654,7 +654,7 @@ export default function PolicyClarifier() {
                     Copy
                   </button>
                 </div>
-                <div style={{ fontSize: "0.92rem", color: "var(--slate-800)", lineHeight: 1.7 }}>
+                <div style={{ fontSize: "0.92rem", color: "var(--slate-800)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
                   {translatedAnswer}
                 </div>
               </div>
