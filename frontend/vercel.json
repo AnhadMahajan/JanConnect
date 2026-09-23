@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://YOUR-RENDER-BACKEND-URL.onrender.com/api/:match*"
+      "destination": "https://janconnect-backend-t3vo.onrender.com/api/:match*"
     }
   ]
 }
