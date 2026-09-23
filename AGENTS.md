@@ -23,7 +23,7 @@ Welcome to **JanConnect (जन कनेक्ट)**. This document is the prim
 ## 2. Directory Structure
 
 ```text
-awaazsetu/                      # Project Root (JanConnect)
+JanConnect/                      # Project Root (JanConnect)
 ├── AGENTS.md                   # This file (Agent Instructions & Overview)
 ├── PROJECT_EXPLANATION.md      # Comprehensive deep-dive documentation
 ├── README.md                   # Human onboarding & setup guide

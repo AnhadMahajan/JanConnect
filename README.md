@@ -27,7 +27,252 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 
 ---
 
-## 🏛️ End-to-End System Architecture
+## 🏛️ End-to-End System Architecture & Project Flow
+
+### 🔄 Project Flow & Architecture Graph
+
+```mermaid
+flowchart TD
+    %% Citizen & Officer Inputs
+    subgraph Inputs ["👥 1. Citizen & Municipal Officer Entry Points"]
+        VoiceIn["🎙️ Voice Grievance Recording<br/>(Hindi / Punjabi / English Audio)"]
+        TextIn["✍️ Regional Grievance Input<br/>(Colloquial / Hinglish / Gurmukhi)"]
+        DocIn["📄 Citizen Utility Proof Document<br/>(Water/Electricity Bill or ID PDF/Image)"]
+        PolicyIn["📜 Government Policy Circular<br/>(Gazette Notification / Scheme PDF)"]
+        OfficerIn["👮 Municipal Officer Action<br/>(SDO / Field Engineer Verification)"]
+    end
+
+    %% Frontend Components
+    subgraph Frontend ["💻 2. React 18 + Vite Frontend (frontend/src/components/)"]
+        GrievanceUI["frontend/src/components/GrievanceNavigator.jsx<br/>• 5-Stage Stepper Ribbon<br/>• Voice Recording & Document OCR Modal<br/>• Grounded Advisory & Docket Filing Action"]
+        TrackerUI["frontend/src/components/LiveTracker.jsx<br/>• Docket Status Query (GRV-XXXXXX)<br/>• Real-Time Milestone History Timeline"]
+        PolicyUI["frontend/src/components/PolicyClarifier.jsx<br/>• Welfare Schemes & Circular Ingestion<br/>• Clause Q&A & 7-Language Audio Translation"]
+        OfficerUI["frontend/src/components/OfficerDesk.jsx<br/>• Municipal KPI Summary Tiles<br/>• Engineer Assignment & Audit Remarks"]
+    end
+
+    %% Backend Flask Gateway
+    subgraph Gateway ["⚡ 3. Flask API Gateway (backend/app.py — Port 5001)"]
+        R_Audio["POST /api/transcribe-audio"]
+        R_Extract["POST /api/extract-file & /api/extract-text"]
+        R_Route["POST /api/route"]
+        R_Respond["POST /api/respond"]
+        R_File["POST /api/file-complaint"]
+        R_Status["GET /api/status/:tracking_id"]
+        R_Admin["GET /api/admin/complaints & POST /api/admin/update-status"]
+        R_Policy["POST /api/policy/extract, /api/policy/ask, /api/policy/translate"]
+    end
+
+    %% Agentic Core Services
+    subgraph Pipeline ["🤖 4. Agentic Pipeline Services (backend/services/)"]
+        S1["Stage 1: backend/services/intake.py & speech.py<br/>• Multilingual Normalization & Audio STT"]
+        S2["Stage 2: backend/services/extraction.py<br/>• Layout OCR & Entity Structuring"]
+        S3["Stage 3: backend/services/routing.py<br/>• Zero-Latency Lexical & Sector Routing"]
+        S4["Stage 4: backend/services/agents.py<br/>• Grounded Specialist Agent & RAG Synthesis"]
+        S5["Stage 5: backend/services/filing.py<br/>• Table Storage & Signed Dossier Archival"]
+        S6["Stage 6: backend/services/policy_qa.py<br/>• Policy Clarifier & Multilingual Q&A"]
+    end
+
+    %% Grounding Data Files
+    subgraph GroundingData ["📚 Local Policy Knowledge & Mock Corpus"]
+        PolFile["policies.txt<br/>(Grounding Statutory Corpus indexed into Azure)"]
+        MockDept["backend/mock_data/department_policies.json<br/>(MCC Water, CPDL, MOH, B&R, RTI Lexicons & SLAs)"]
+        MockComplaints["backend/mock_data/complaints_sample.json<br/>(Archival Scenarios & Baseline Data)"]
+    end
+
+    %% Azure Cloud Infrastructure
+    subgraph Azure ["☁️ 5. Connected Azure AI Cloud Infrastructure"]
+        AzSpeech["Azure Cognitive Speech SDK<br/>• Audio STT (hi-IN, pa-IN, en-IN)"]
+        AzTrans["Azure AI Translator API (v3.0)<br/>• Script Detection & English Working Copy"]
+        AzDoc["Azure Document Intelligence<br/>• Model: 'prebuilt-layout' OCR"]
+        AzOpenAI["Azure OpenAI Service<br/>• Deployment: 'gpt-5-mini'<br/>• Entity Extraction, Advisory & Policy Q&A"]
+        AzSearch["Azure AI Search<br/>• Index: 'department-policies-index'<br/>• Semantic & Keyword Grounding RAG"]
+    end
+
+    %% Azure Persistent Storage
+    subgraph Storage ["💾 6. Azure Storage Account (janconnectstorage)"]
+        AzTables[("Azure Table Storage<br/>Table: 'complaints'<br/>• Live Grievance Entities<br/>• Timestamped Milestone Audit Logs")]
+        AzBlobs[("Azure Blob Storage<br/>Containers:<br/>• 'citizendocuments' (Proof Bills/IDs)<br/>• 'grievancereports' (Signed Audit Dossiers)<br/>• 'policydocuments' (Uploaded Circulars)")]
+    end
+
+    %% Connections: Inputs to UI
+    VoiceIn --> GrievanceUI
+    TextIn --> GrievanceUI
+    DocIn --> GrievanceUI
+    PolicyIn --> PolicyUI
+    OfficerIn --> OfficerUI
+
+    %% Connections: UI to Gateway
+    GrievanceUI -->|Audio Blob| R_Audio
+    GrievanceUI -->|PDF / Image File| R_Extract
+    GrievanceUI -->|Grievance Text & Name| R_Respond
+    GrievanceUI -->|Docket Registration| R_File
+    TrackerUI -->|Lookup Tracking ID| R_Status
+    OfficerUI -->|List & Transition Status| R_Admin
+    PolicyUI -->|Circular File & Doubts| R_Policy
+
+    %% Connections: Gateway to Pipeline Services
+    R_Audio --> S1
+    R_Extract --> S2
+    R_Respond --> S1
+    S1 -->|English Working Text| S3
+    S3 -->|Assigned Department & Sector| S4
+    R_File --> S5
+    R_Status --> S5
+    R_Admin --> S5
+    R_Policy --> S6
+
+    %% Connections: Pipeline to Local Corpus
+    MockDept -.-> S3
+    MockDept -.-> S4
+    PolFile -.->|Pre-indexed| AzSearch
+
+    %% Connections: Pipeline to Azure Cloud Services
+    S1 -->|Voice Bytes Stream| AzSpeech
+    AzSpeech -->|Transcribed Text| S1
+    S1 -->|Regional Text Payload| AzTrans
+    AzTrans -->|English Translation| S1
+
+    S2 -->|Binary File Stream| AzDoc
+    AzDoc -->|Structured Layout & Tables| AzOpenAI
+    AzOpenAI -->|JSON Key-Value Entities| S2
+    S2 -->|Upload Proof Bill| AzBlobs
+
+    S4 -->|Search Query (Text + Dept)| AzSearch
+    AzSearch -->|Retrieved Policy Clauses| S4
+    S4 -->|Grounding Context + Problem| AzOpenAI
+    AzOpenAI -->|Dynamic Advisory & RTS SLA| S4
+
+    S5 -->|Issue Tracking ID (GRV-XXXXXX)| AzTables
+    S5 -->|JSON Audit Dossier| AzBlobs
+
+    S6 -->|Circular Stream| AzDoc
+    S6 -->|Archive Circular| AzBlobs
+    S6 -->|Policy Text + Question| AzOpenAI
+    AzOpenAI -->|Grounded Answer & Citations| S6
+    S6 -->|Target Language Text| AzTrans
+
+    %% Feedback to Frontend UI
+    S4 -.->|Phase 2 Grounded Statutory Advisory| GrievanceUI
+    S5 -.->|Phase 3 Digital Credential Ticket| GrievanceUI
+    AzTables -.->|Milestone Status Timeline| TrackerUI
+    AzTables -.->|Aggregated Metrics & Complaints| OfficerUI
+    S6 -.->|Grounded Answer & Audio| PolicyUI
+
+    %% Color & Style Classes
+    classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1.5px,color:#0f172a;
+    classDef uiStyle fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e3a8a;
+    classDef gwStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+    classDef pipeStyle fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d;
+    classDef azStyle fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0369a1;
+    classDef storeStyle fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95;
+    classDef dataStyle fill:#fff7ed,stroke:#ea580c,stroke-width:1.5px,color:#9a3412;
+
+    class VoiceIn,TextIn,DocIn,PolicyIn,OfficerIn inputStyle;
+    class GrievanceUI,TrackerUI,PolicyUI,OfficerUI uiStyle;
+    class R_Audio,R_Extract,R_Route,R_Respond,R_File,R_Status,R_Admin,R_Policy gwStyle;
+    class S1,S2,S3,S4,S5,S6 pipeStyle;
+    class PolFile,MockDept,MockComplaints dataStyle;
+    class AzSpeech,AzTrans,AzDoc,AzOpenAI,AzSearch azStyle;
+    class AzTables,AzBlobs storeStyle;
+```
+
+---
+
+### ⚡ Chronological Execution Flow (Call Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Citizen as 👤 Citizen
+    participant UI as 💻 GrievanceNavigator.jsx
+    participant API as ⚡ Flask Gateway (app.py)
+    participant S1 as 🌐 intake.py / speech.py
+    participant S2 as 📄 extraction.py
+    participant S3 as 🧭 routing.py
+    participant S4 as 🤖 agents.py
+    participant S5 as 📝 filing.py
+    participant AzureAI as ☁️ Azure AI Services
+    participant Storage as 💾 Azure Storage Account
+    actor Officer as 👮 Municipal Officer
+
+    Note over Citizen,UI: Phase 1: Intake, Speech & Proof Ingestion
+    Citizen->>UI: Record Voice Note / Type in Hindi or Punjabi
+    opt Audio Transcription
+        UI->>API: POST /api/transcribe-audio (file)
+        API->>S1: speech.transcribe_audio()
+        S1->>AzureAI: Azure Speech SDK (hi-IN / pa-IN / en-IN)
+        AzureAI-->>S1: Transcribed Text
+        S1-->>API-->>UI: Populate Grievance Text
+    end
+
+    opt Proof Document OCR (Water / Power Bill)
+        Citizen->>UI: Upload Proof Document (PDF / Image)
+        UI->>API: POST /api/extract-file (Multipart file)
+        API->>S2: extraction.extract_document_from_bytes()
+        S2->>AzureAI: Azure Document Intelligence (prebuilt-layout)
+        AzureAI-->>S2: Extracted Text & Layout Tables
+        S2->>AzureAI: Azure OpenAI (gpt-5-mini Structuring)
+        AzureAI-->>S2: Uppercase Key-Value JSON
+        S2->>Storage: Archive to Blob ('citizendocuments')
+        S2-->>API-->>UI: Verified Entities & Blob Link
+    end
+
+    Note over UI,S4: Phase 2: Grounded Statutory Advisory Pipeline
+    Citizen->>UI: Click "Analyze & Process Grievance"
+    UI->>API: POST /api/respond { raw_text, citizen_name }
+    API->>S1: intake.translate_text(raw_text)
+    S1->>AzureAI: Azure AI Translator (Detect Script & Translate)
+    AzureAI-->>S1: English Working Copy
+    API->>S3: routing.route_complaint(working_text)
+    S3-->>API: Matched Department & Sector (e.g. MCC Water / Sector 21)
+    API->>S4: agents.mock_department_response(dept_id, working_text)
+    S4->>AzureAI: Azure AI Search query ('department-policies-index')
+    AzureAI-->>S4: Grounded Policy Clauses (policies.txt)
+    S4->>AzureAI: Azure OpenAI (gpt-5-mini, reasoning_effort=low)
+    AzureAI-->>S4: Dynamic Situation-Specific Redressal Steps & SLA
+    S4-->>API-->>UI: Render Phase 2 Card (Advisory, SLA, Helpline, Office)
+
+    Note over Citizen,Storage: Phase 3: Official Filing & Persistent Table Registration
+    Citizen->>UI: Click "File Official Grievance & Issue Docket"
+    UI->>API: POST /api/file-complaint { raw_text, citizen_name }
+    API->>S5: filing.file_complaint()
+    S5->>S5: Generate Cryptographic Docket ID (GRV-XXXXXX)
+    S5->>Storage: Insert Record into Azure Table Storage ('complaints')
+    S5->>Storage: Upload Signed Audit Dossier to Blob ('grievancereports')
+    S5-->>API-->>UI: Render Phase 3 Digital Credential Ticket
+
+    Note over Officer,Citizen: Phase 4: Municipal Officer Desk & Live Status Tracking
+    Officer->>API: GET /api/admin/complaints
+    API->>S5: filing.list_all_complaints()
+    S5->>Storage: Query Azure Table Storage ('complaints')
+    Storage-->>S5-->>API-->>Officer: KPI Metrics & Grievance Register
+    Officer->>API: POST /api/admin/update-status { tracking_id, status, remarks }
+    API->>S5: Update status & append milestone history
+    S5->>Storage: Persist updated entity to Azure Table Storage
+    Citizen->>UI: Enter Tracking ID in LiveTracker.jsx
+    UI->>API: GET /api/status/:tracking_id
+    API->>S5: filing.get_status(tracking_id)
+    S5->>Storage: Query Table Storage
+    Storage-->>S5-->>API-->>UI: Real-Time Verified Status & Milestone History
+```
+
+---
+
+### 🔗 Codebase File & Connection Matrix
+
+| User Action / Trigger | Frontend Source File | Backend API Endpoint (`backend/app.py`) | Backend Service File (`backend/services/`) | Connected Azure Cloud Services | Data Destination / Persistence |
+|---|---|---|---|---|---|
+| **Voice Grievance Recording** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/transcribe-audio` | `backend/services/speech.py` | **Azure Cognitive Speech SDK** (`hi-IN`, `pa-IN`, `en-IN`) | Transcribed text in React state |
+| **Multilingual Grievance Intake** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/respond` | `backend/services/intake.py` | **Azure AI Translator** (auto-detect Hindi/Punjabi/English) | English working copy for downstream agents |
+| **Proof Document Upload (Bill/ID)** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/extract-file` | `backend/services/extraction.py` | **Azure Document Intelligence** (`prebuilt-layout`) + **Azure OpenAI** (`gpt-5-mini`) | Extracted JSON entities + **Azure Blob Storage** (`citizendocuments`) |
+| **Department & Sector Routing** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/route` | `backend/services/routing.py` | Local Lexical Classifier + Sector Regex Engine | Assigned municipal department & helpline |
+| **Grounded Advisory Generation** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/respond` | `backend/services/agents.py` | **Azure AI Search** (`department-policies-index`) + **Azure OpenAI** (`gpt-5-mini`) | Dynamic statutory advisory & SLA rules |
+| **Official Docket Registration** | `frontend/src/components/GrievanceNavigator.jsx` | `POST /api/file-complaint` | `backend/services/filing.py` | **Azure Table Storage** (`complaints`) + **Azure Blob Storage** (`grievancereports`) | Tracking ID (`GRV-XXXXXX`), Table entity, Signed Audit Dossier |
+| **Real-Time Lifecycle Tracking** | `frontend/src/components/LiveTracker.jsx` | `GET /api/status/:tracking_id` | `backend/services/filing.py` | **Azure Table Storage** (`complaints`) | Live milestone timeline & inspector notes |
+| **Officer Dispatch & Remarks** | `frontend/src/components/OfficerDesk.jsx` | `POST /api/admin/update-status` | `backend/services/filing.py` | **Azure Table Storage** (`complaints`) | Updated complaint entity with audit history |
+| **Policy Ingestion & Doubt Q&A** | `frontend/src/components/PolicyClarifier.jsx` | `POST /api/policy/extract` & `ask` | `backend/services/policy_qa.py` | **Azure Doc Intel** + **Azure OpenAI** (`gpt-5-mini`) + **Azure AI Translator** | Grounded answers with cited clauses + **Azure Blob Storage** (`policydocuments`) |
+
+### 🧱 System Component Diagram
 
 ```
                                ┌─────────────────────────────────────────┐
@@ -81,7 +326,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ## 🚀 6-Stage Agentic Pipeline: Architectural Explanation
 
 ### Stage 1: Multilingual Intake & Voice Transcription
-- **Key Modules**: [`backend/services/intake.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/intake.py) (`translate_text`, `translate_to_language`) & [`backend/services/speech.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/speech.py) (`transcribe_audio`)
+- **Key Modules**: [`backend/services/intake.py`](file:///d:/4th%20SEM/JanConnect/backend/services/intake.py) (`translate_text`, `translate_to_language`) & [`backend/services/speech.py`](file:///d:/4th%20SEM/JanConnect/backend/services/speech.py) (`transcribe_audio`)
 - **Azure Services**: **Azure AI Translator REST API (v3.0)** & **Azure Cognitive Speech SDK**
 - **How It Works**:
   - **Language Auto-Detection**: Detects input language in real-time (`hi`, `pa`, `en`) and produces an English normalized working copy for downstream policy retrieval, while preserving the citizen's original native submission for audit records.
@@ -91,7 +336,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Stage 2: Citizen Document Intelligence & Cloud Retention
-- **Key Module**: [`backend/services/extraction.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/extraction.py) (`extract_document_from_bytes`, `extract_document_from_text`, `upload_document_to_blob`)
+- **Key Module**: [`backend/services/extraction.py`](file:///d:/4th%20SEM/JanConnect/backend/services/extraction.py) (`extract_document_from_bytes`, `extract_document_from_text`, `upload_document_to_blob`)
 - **Azure Services**: **Azure Document Intelligence (`prebuilt-layout`)**, **Azure OpenAI (`gpt-5-mini`)**, **Azure Blob Storage (`citizendocuments`)**
 - **How It Works**:
   - **Immutable Cloud Archival**: Uploads the citizen's uploaded proof document (water bill, electricity bill, e-Sampark receipt) directly into Azure Blob Storage (`citizendocuments` container) and attaches a permanent blob reference URL.
@@ -101,7 +346,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Stage 3: Zero-Latency Intent & Chandigarh Sector Routing
-- **Key Module**: [`backend/services/routing.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/routing.py) (`detect_chandigarh_sector`, `route_complaint`)
+- **Key Module**: [`backend/services/routing.py`](file:///d:/4th%20SEM/JanConnect/backend/services/routing.py) (`detect_chandigarh_sector`, `route_complaint`)
 - **Technology**: Local Lexical Intent Classifier + Sector Detection Regex Engine
 - **How It Works**:
   - **Chandigarh Sector Extraction**: Automatically identifies numeric sectors (e.g. `Sector 22-B`, `Sec 35 C`) and prominent non-numeric municipal localities (e.g. `Manimajra / Sector 13`, `Dhanas`, `Maloya`, `Burail`, `Industrial Area Phases 1 & 2`).
@@ -116,7 +361,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Stage 4: Grounded Specialist Agents with Azure AI Search RAG
-- **Key Module**: [`backend/services/agents.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/agents.py) (`_search_grounding_policies`, `mock_department_response`)
+- **Key Module**: [`backend/services/agents.py`](file:///d:/4th%20SEM/JanConnect/backend/services/agents.py) (`_search_grounding_policies`, `mock_department_response`)
 - **Azure Services**: **Azure AI Search (`department-policies-index`)** & **Azure OpenAI (`gpt-5-mini`)**
 - **How It Works**:
   - **Policy Retrieval (RAG)**: Queries the Azure AI Search index (`department-policies-index`, indexed from `policies.txt`) to retrieve relevant statutory rules, SLA constraints, and departmental SOPs.
@@ -126,7 +371,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Stage 5: Ticket Generation, SLA Tracking & Azure Table Storage Persistence
-- **Key Module**: [`backend/services/filing.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/filing.py) (`file_complaint`, `get_status`, `upload_grievance_report_to_blob`)
+- **Key Module**: [`backend/services/filing.py`](file:///d:/4th%20SEM/JanConnect/backend/services/filing.py) (`file_complaint`, `get_status`, `upload_grievance_report_to_blob`)
 - **Azure Services**: **Azure Table Storage (`complaints`)** & **Azure Blob Storage (`grievancereports`)**
 - **How It Works**:
   - **Official Tracking ID**: Issues cryptographically randomized tracking identifiers (e.g. `GRV-A72B8C91`).
@@ -137,7 +382,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Stage 6: Government Policy Clarifier & Multilingual Q&A Engine
-- **Key Module**: [`backend/services/policy_qa.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/policy_qa.py) (`extract_policy_content`, `answer_policy_doubt`)
+- **Key Module**: [`backend/services/policy_qa.py`](file:///d:/4th%20SEM/JanConnect/backend/services/policy_qa.py) (`extract_policy_content`, `answer_policy_doubt`)
 - **Azure Services**: **Azure Document Intelligence**, **Azure OpenAI (`gpt-5-mini`)**, **Azure AI Translator**
 - **How It Works**:
   - **Ingestion Flexibility**: Citizens can upload government circulars, subsidy gazettes, or welfare schemes as PDFs/images (processed via Document Intelligence OCR), paste text directly, or select from built-in schemes (*PM Surya Ghar Solar Subsidy*, *Delhi Jal Board 20kL Free Water Scheme*, *RTI Act 2005*).
@@ -148,7 +393,7 @@ JanConnect bridges this gap by deploying an autonomous **6-Stage Agentic Pipelin
 ---
 
 ### Feature D: Municipal Officer Resolution Desk
-- **Key Modules**: [`backend/app.py`](file:///d:/5th%20SEM/awaazsetu/backend/app.py) & [`backend/services/filing.py`](file:///d:/5th%20SEM/awaazsetu/backend/services/filing.py)
+- **Key Modules**: [`backend/app.py`](file:///d:/4th%20SEM/JanConnect/backend/app.py) & [`backend/services/filing.py`](file:///d:/4th%20SEM/JanConnect/backend/services/filing.py)
 - **How It Works**:
   - **Aggregated Municipal KPIs**: Real-time summary tiles showing Total Grievances, Pending Verification, Assigned/In Progress, and Resolved tickets.
   - **Multi-Factor Search & Filtering**: Filters tickets by department, workflow status, citizen name, or tracking ID.
@@ -279,11 +524,11 @@ AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=<stor
 ## 🗺️ Codebase Knowledge Graph (Graphify)
 
 JanConnect incorporates an AST-parsed knowledge graph in `graphify-out/`:
-- **Interactive Visualizer**: Open [`graphify-out/graph.html`](file:///d:/5th%20SEM/awaazsetu/graphify-out/graph.html) in your browser.
+- **Interactive Visualizer**: Open [`graphify-out/graph.html`](file:///d:/4th%20SEM/JanConnect/graphify-out/graph.html) in your browser.
 - **Code Graph Queries**:
   ```bash
   graphify query "How does Stage 1 intake connect to Stage 4 agents?"
   graphify path "route_complaint" "mock_department_response"
   graphify explain "file_complaint"
   ```
-- **Wiki**: Explore [`graphify-out/wiki/index.md`](file:///d:/5th%20SEM/awaazsetu/graphify-out/wiki/index.md) for pre-indexed articles detailing each system community.
+- **Wiki**: Explore [`graphify-out/wiki/index.md`](file:///d:/4th%20SEM/JanConnect/graphify-out/wiki/index.md) for pre-indexed articles detailing each system community.
